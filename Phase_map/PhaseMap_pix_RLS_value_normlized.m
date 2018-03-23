@@ -1,4 +1,4 @@
-function [out_all] = phase_map_pix(fstim, First_layer,varargin)
+function [out_all] = PhaseMap_pix_RLS_value_normlized(fstim, First_layer,varargin)
 
 % Phase_map_pix compute the Fast Fourier Transform of the DFF_pix matrice
 % and return the file "out_all.mat" with the amplitude and phase of
@@ -21,7 +21,8 @@ for layer = First_layer%:numel(F.sets);
     F.select(layer);
     
     % Load DFF and signal_stack
-    load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'DFF_bg.mat'])
+%    load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'DFF_bg.mat'])
+load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'DFF.mat'])
 %         load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'dff.mat'],'dff')
 %         DFF_pix = dff.signal_stack;
     load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'sig.mat'],'DD')
@@ -74,7 +75,7 @@ for layer = First_layer%:numel(F.sets);
     value     = abs(Y(:,ind_fstim));
     
     out_all(layer).phi      = phi;
-    out_all(layer).deltaphi = - (phi + phase_delay);
+    out_all(layer).deltaphi = (phi - phase_delay + pi);% -phase_delay = Shift positive of the fluorescence and +pi = because of the fourier transform is done against a cosinus  
     out_all(layer).value    = value;
     out_all(layer).amplitude    = amplitude;
     out_all(layer).ind      = ind;
