@@ -49,25 +49,40 @@ for layer = Layers
     
     Img1sm = imresize(Img1,1/binsize);
     Imgmean = double(Img1sm);
-    size(W{layer-(Layers(1)-1)})
-    sigstack = uint16(zeros(size(W{layer-(Layers(1)-1)},1),Nimages));
     
-    for n=1:Nimages;
-%         tic
-        Img = Limg(n);
-        Imgsm = imresize(Img,1/binsize);
-        Imgmean = Imgmean+Imgsm;
-        sigstack(:,n) = Imgsm(W{layer-(Layers(1)-1)});
-%         if mod(n,100)==1
-%             fprintf('Image #%i ...', n);
-%             fprintf(' %.2fsec\n', toc);
-%         end
+    try
+        pos=1;
+        load(['/home/ljp/Science/Projects/RLS_test/Data/2018-03-27/Run 10/Segmented/Layer_',num2str(layer) ,'.mat']);
+        size(pos, 1)
+        sigstack = uint16(zeros(size(pos, 1),Nimages));
+        for n=1:Nimages
+            Imgsm = Limg(n);
+            Imgmean = Imgmean+Imgsm;
+            for neu = 1:size(pos, 1)
+                sigstack(neu,n) = mean(Imgsm(plist{neu}));
+            end
+        end
+        
+        DD.signal_stack=sigstack;  % matrices pixels_intensite xtemps
+        DD.index = sub2ind(size(Img), round(pos(:,2)), round(pos(:,1)));                 % indices linéaires des pixels
+        DD.imgref = Imgsm;            % images de réferejnce
+        save([outdir 'sig.mat'],'DD');
+        imwrite(uint16(Imgmean/Nimages),mean_image_save);
+    catch
+        size(W{layer-(Layers(1)-1)})
+        sigstack = uint16(zeros(size(W{layer-(Layers(1)-1)},1),Nimages));
+        for n=1:Nimages
+            Img = Limg(n);
+            Imgsm = imresize(Img,1/binsize);
+            Imgmean = Imgmean+Imgsm;
+            sigstack(:,n) = Imgsm(W{layer-(Layers(1)-1)});
+        end
+        DD.signal_stack=sigstack;  % matrices pixels_intensite xtemps
+        DD.index = W{layer-(Layers(1)-1)};                 % indices linéaires des pixels
+        DD.imgref = Imgsm;            % images de réferejnce
+        save([outdir 'sig.mat'],'DD');
+        imwrite(uint16(Imgmean/Nimages),mean_image_save);
     end
-    
-    DD.signal_stack=sigstack;  % matrices pixels_intensite xtemps
-    DD.index = W{layer-(Layers(1)-1)};                 % indices linéaires des pixels
-    DD.imgref = Imgsm;            % images de réferejnce
-    save([outdir 'sig.mat'],'DD');
-    imwrite(uint16(Imgmean/Nimages),mean_image_save);
+   
     
 end

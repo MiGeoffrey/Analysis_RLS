@@ -2,9 +2,9 @@ clc
 
 % === Parameters ==========================================================
 
-dataDir = '/Users/Projects/RLS/Data/2016-12-07/Run 01/';
+dataDir = '/home/ljp/Science/Projects/RLS_test/Data/2018-03-27/Run 10/';
 Nuc = false;
-prefin = [dataDir 'Files/grey_stack/Image_'];
+prefin = [dataDir 'Files/ref_stack/Images0_'];
 suffin = '.tif';
 
 dmask = 50;                 % Parameters for the brain mask
@@ -13,7 +13,7 @@ thCorr = 0.05;              % Correlation filter
 
 % =========================================================================
 
-for layer = 7 %1:20
+for layer = 3:20
     
     clear Img Mask Pre Pos coeff
     % --- Load ---------------------------------------------------------------- 
@@ -24,11 +24,18 @@ for layer = 7 %1:20
  
     % --- Mask ----------------------------------------------------------------   
     if ~exist('Mask', 'var')
-        tic;load([dataDir, 'Files/signal_stacks/',num2str(layer) ,'/sig.mat']);toc
-        Mask = DD.imgref*0;
-        Mask(DD.index) = 1;
-        Mask(~DD.index) = 0;
-        Mask = logical(Mask);figure(100),imshow(Mask);  
+        try
+            tic;load([dataDir, 'Files/signal_stacks/',num2str(layer) ,'/sig.mat']);toc
+            Mask = DD.imgref*0;
+            Mask(DD.index) = 1;
+            Mask(~DD.index) = 0;
+            Mask = logical(Mask);figure(100),imshow(Mask);
+        catch
+            load(['/home/ljp/Science/Projects/RLS_test/Data/2018-03-27/Run 10/Files/signal_stacks/',num2str(layer) ,'/contour.mat'])
+            Mask = zeros(F.IP.height, F.IP.width);
+            Mask(w)=1;
+            imshow(Mask)
+        end
     end
 
     % --- Pre-process ---------------------------------------------------------

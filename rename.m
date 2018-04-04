@@ -1,8 +1,4 @@
-%function rename(manual, date, run)
-
-manual = 0;
-date = '2018-03-19';
-run = 2;
+function rename(manual, date, run, Dir)
 
 % Parameters
 if manual == 1
@@ -11,7 +7,7 @@ if manual == 1
     in.date = input('?> ', 's');
     
     % --- Select run
-    runs = dir(['/home/ljp/Science/Projects/RLS/' 'Data' filesep in.date filesep 'Run *']);
+    runs = dir([Dir 'Data' filesep in.date filesep 'Run *']);
     if numel(runs)>1
         fprintf('\nPlease select a run:\n');
         for i = 1:numel(runs)
