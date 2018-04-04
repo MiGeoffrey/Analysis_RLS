@@ -13,7 +13,7 @@ thCorr = 0.05;              % Correlation filter
 
 % =========================================================================
 
-for layer = 7 %1:20
+for layer = 5 %1:20
     
     clear Img Mask Pre Pos coeff
     % --- Load ---------------------------------------------------------------- 
@@ -28,7 +28,7 @@ for layer = 7 %1:20
         Mask = DD.imgref*0;
         Mask(DD.index) = 1;
         Mask(~DD.index) = 0;
-        Mask = logical(Mask);figure(100),imshow(Mask);  
+        Mask = logical(Mask);figure(100)   
     end
 
     % --- Pre-process ---------------------------------------------------------
