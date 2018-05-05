@@ -25,11 +25,21 @@ for l = Layers%:F.sets(end).id;
     
     % load signal stack
     l = int2str(l);
-    data_in = load([F.Files 'signal_stacks/' l '/sig.mat']); % matrix with the raw pixel fluorescence time
+    try
+        data_in = load([F.Files 'signal_stacks/' l '/sig_seg.mat']); % matrix with the raw pixel fluorescence time
+        seg = 1;
+    catch ME
+        data_in = load([F.Files 'signal_stacks/' l '/sig.mat']); % matrix with the raw pixel
+        seg = 0;
+    end
     
+    if seg == 1
+    'Calculate DFF on segmented data'
+    end
+
     % get background
     Img1 = F.iload(1);  
-    bg = Img1.background;
+    bg   = Img1.background;
 
 %     h = 0;
 %     
@@ -42,8 +52,12 @@ for l = Layers%:F.sets(end).id;
     dff =  quantile_dff(data_in.DD.signal_stack(:,1:end),dt,bg) ;
     %clear data_in;
     % Save
-    Dmat = F.matfile(['signal_stacks', '/', l, '/', 'DFF_bg']);
-    Dmat.save('DFF_pix'     , dff   , 'DFF = (F(i,t)-baseline(i,t))/(baseline(i,t)-background(t))'); 
+    if seg == 1
+        Dmat = F.matfile(['signal_stacks', '/', l, '/', 'DFF_bg_seg']);
+    else
+        Dmat = F.matfile(['signal_stacks', '/', l, '/', 'DFF_bg']);
+    end
+    Dmat.save('DFF_pix'     , dff  , 'DFF = (F(i,t)-baseline(i,t))/(baseline(i,t)-background(t))'); 
     Dmat.save('background'  , bg   , 'background = Img1.background'); 
     index = data_in.DD.index;
     Dmat.save('index'  , index   , 'index of all pixels in brain contour'); 

@@ -1,8 +1,9 @@
-clc
+function segmentation(Layers,F)
 
 % === Parameters ==========================================================
 
-dataDir = '/home/ljp/Science/Projects/RLS/Data/2018-01-31/Run 04/';
+dataDir = [F.Data];
+
 Nuc = false;
 prefin = [dataDir 'Files/grey_stack/Image_'];
 suffin = '.tif';
@@ -13,7 +14,7 @@ thCorr = 0.05;              % Correlation filter
 
 % =========================================================================
 
-for layer = 3:20
+for layer = Layers
     
     
     clear Img Mask Pre Pos coeff
@@ -32,7 +33,7 @@ for layer = 3:20
             Mask(~DD.index) = 0;
             Mask = logical(Mask);figure(100),imshow(Mask);
         catch
-            load(['/home/ljp/Science/Projects/RLS_test/Data/2018-03-27/Run 10/Files/signal_stacks/',num2str(layer) ,'/contour.mat'])
+            load([F.Files 'signal_stacks/',num2str(layer) ,'/contour.mat'])
             Mask = zeros(F.IP.height, F.IP.width);
             Mask(w)=1;
             imshow(Mask)
