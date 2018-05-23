@@ -53,11 +53,13 @@ for layer = Layers
     
     % --- Watershed -----------------------------------------------------------
     if ~exist('Pos', 'var')
+        
         Wat = Pre;
         Mask = logical(1-Mask);
         Wat(Mask) = Inf;
         Mask = logical(1-Mask);
         Mem_Wat = Wat;
+        Wat(isnan(Wat)) = 0;
         L = watershed(Wat);
         R = regionprops(L, {'Centroid', 'Area', 'PixelIdxList'});
         Pos = reshape([R(:).Centroid], [2 numel(R)])';

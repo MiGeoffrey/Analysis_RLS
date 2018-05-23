@@ -57,7 +57,6 @@ for layer = Layers
         size(pos, 1);
         sigstack = uint16(zeros(size(pos, 1),Nimages));
         for n=1:Nimages
-            
             Img = Limg(n);
             Imgmean = Imgmean+Img;
             for neu = 1:size(pos, 1)
@@ -72,6 +71,7 @@ for layer = Layers
         save([outdir 'sig_seg.mat'],'DD','index' );
         imwrite(uint16(Imgmean/Nimages),mean_image_save);
     catch
+        'Create signal stack on No segmented data'
         size(W{layer-(Layers(1)-1)})
         sigstack = uint16(zeros(size(W{layer-(Layers(1)-1)},1),Nimages));
         for n=1:Nimages
