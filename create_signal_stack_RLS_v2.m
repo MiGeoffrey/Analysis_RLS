@@ -6,7 +6,7 @@ for layer = Layers
     catch ME
         Limg = @(n) double(imread([F.Data 'Images/' F.IP.prefix num2str(n, F.IP.format) '.tif']));
         Img1 = Limg(size(F.sets,2)*(ind_Refstack-1)+(layer-1));
-         
+        
         Img1sm = imresize(Img1,1/binsize);
         figure(100);
         imshow(rescalegd(Img1sm));
@@ -17,7 +17,7 @@ for layer = Layers
             BW = roipoly;
             w = find(BW==1);
         end
-
+        
         % --- Out directorties ---
         outdir = [F.Files 'signal_stacks/' num2str(layer) '/'];
         [status, message, messageid] = rmdir(outdir,'s');
@@ -57,7 +57,21 @@ for layer = Layers
         size(pos, 1);
         sigstack = uint16(zeros(size(pos, 1),Nimages));
         for n=1:Nimages
-            Img = Limg(n);
+            try
+                Img = Limg(n);
+            catch
+                'Error with the image drift corrected number: '
+                n
+                F.select(F.sets(layer).id);
+                % Define reference image
+                Img = F.iload(n);
+                Img.translate(-dy(n), -dx(n));
+                % Save corrected image
+                Mtag = ['Images_cor/', num2str(layer),'/'];
+                itag = [Mtag,F.IP.prefix num2str(n, F.IP.format )];
+                F.isave(Img.pix, '', 'bitdepth', 16, 'fname', F.fname(itag, F.IP.extension));
+                Img = Limg(n);
+            end
             Imgmean = Imgmean+Img;
             for neu = 1:size(pos, 1)
                 sigstack(neu,n) = mean(Img(plist{neu}));
@@ -75,7 +89,21 @@ for layer = Layers
         size(W{layer-(Layers(1)-1)})
         sigstack = uint16(zeros(size(W{layer-(Layers(1)-1)},1),Nimages));
         for n=1:Nimages
-            Img = Limg(n);
+            try
+                Img = Limg(n);
+            catch
+                'Error with the image drift corrected number: '
+                n
+                F.select(F.sets(layer).id);
+                % Define reference image
+                Img = F.iload(n);
+                Img.translate(-dy(n), -dx(n));
+                % Save corrected image
+                Mtag = ['Images_cor/', num2str(layer),'/'];
+                itag = [Mtag,F.IP.prefix num2str(n, F.IP.format )];
+                F.isave(Img.pix, '', 'bitdepth', 16, 'fname', F.fname(itag, F.IP.extension));
+                Img = Limg(n);
+            end
             Imgsm = imresize(Img,1/binsize);
             Imgmean = Imgmean+Imgsm;
             sigstack(:,n) = Imgsm(W{layer-(Layers(1)-1)});
@@ -87,6 +115,6 @@ for layer = Layers
         save([outdir 'sig.mat'],'DD', 'index');
         imwrite(uint16(Imgmean/Nimages),mean_image_save);
     end
-   
+    
     
 end

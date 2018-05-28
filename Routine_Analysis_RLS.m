@@ -2,13 +2,17 @@
 addpath('/home/ljp/Science/Projects/RLS/Programs')
 
 %% Parameters
-date = '2018-01-31';
-run_number = 2;
-Layers_stack_ref = [10:12];%Layers used to create the reference stack to perform the drift correction
+date = '2018-05-22';
+run_number = [6,20,24];
+Layers_stack_ref = [3:10];%Layers used to create the reference stack to perform the drift correction
 Layers = [3:20];
 ind_Refstack = 10; % determine index of reference brain scan for drift correction
 binsize = 1;
-%%
+%% Toolbox
+
+ML.Project % In order to use the Focus from the Raphael's Routine
+
+dcimgToMmapToTif_loop_RLS(date, run_number); % A function which transform the DCIMG file in a Tif stack with the good name!
 
 rename(0,date,run_number, '/media/Dream/RLS/');
 
@@ -32,4 +36,12 @@ SaveFor3DViewer(Layers,F);
 
 regression_motor(StartLayer,pstim)
 
-%%
+%% Workbench
+
+for run_number = [6,20,24]
+    F = getFocus(date, run_number);
+    tic;create_signal_stack_RLS_v2(Layers, binsize, F, ind_Refstack);toc;
+    tic;DFF_bg(Layers,F);toc;  
+end
+
+
