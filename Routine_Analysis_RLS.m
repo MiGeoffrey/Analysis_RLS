@@ -8,6 +8,7 @@ Layers_stack_ref = [3:10];%Layers used to create the reference stack to perform 
 Layers = [3:20];
 ind_Refstack = 10; % determine index of reference brain scan for drift correction
 binsize = 1;
+fstim = 0.2;
 %% Toolbox
 
 ML.Project % In order to use the Focus from the Raphael's Routine
@@ -34,14 +35,17 @@ DFF_bg(Layers,F);
 
 SaveFor3DViewer(Layers,F);
 
+PhaseMap_pix_RLS_value_normlized(fstim, Layers,F)
+
 regression_motor(StartLayer,pstim)
 
 %% Workbench
 
 for run_number = [6,20,24]
     F = getFocus(date, run_number);
-    tic;create_signal_stack_RLS_v2(Layers, binsize, F, ind_Refstack);toc;
-    tic;DFF_bg(Layers,F);toc;  
+    tic;
+    PhaseMap_pix_RLS_value_normlized(fstim, Layers,F)
+    toc;
 end
 
 

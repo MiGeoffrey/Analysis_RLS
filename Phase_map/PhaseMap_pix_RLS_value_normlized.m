@@ -19,20 +19,20 @@ for layer = First_layer%:numel(F.sets);
     layer
     % Select layer to analyse
     F.select(layer);
-    
     % Load DFF and signal_stack
-%    load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'DFF_bg.mat'])
-load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'DFF.mat'])
-%         load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'dff.mat'],'dff')
-%         DFF_pix = dff.signal_stack;
-    load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'sig.mat'],'DD')
-    
+    load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'DFF_bg.mat']);
     % Load gray image
-    im = rescalegd2(DD.imgref);
-    
+    im = imread([F.Files 'grey_stack' filesep 'Image_' num2str(layer, '%02i') '.tif']);
+    im = rescalegd2(im);
     % Define index result in image
-    ind = DD.index;
-    clear DD;
+    try
+        ind = index;
+        clear index;
+    catch
+        load([F.Files 'signal_stacks' filesep num2str(layer) filesep 'sig.mat'],'DD');
+        ind = DD.index;
+        clear DD;
+    end
     
     % Prepare folder for saving
     outdir = [F.Data 'Files/Phase_map_normalized/PhaseMap_DFF_pix_fstim', num2str(fstim), '/Images'];
