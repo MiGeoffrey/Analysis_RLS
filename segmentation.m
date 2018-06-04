@@ -1,15 +1,22 @@
-function segmentation(Layers,F)
+function segmentation(Layers,F, Seg_stack)
+%% If refstack = 0 => the stack used for the segmentation is the grey_stack
+%% If refstack = 1 => the stack used for the segmentation is the long_exp_stack
 
 % === Parameters ==========================================================
 
 dataDir = [F.Data];
-
-Nuc = false;
-prefin = [dataDir 'Files/grey_stack/Image_'];
+Nuc = true;
+if Seg_stack == 0
+    prefin = [dataDir 'Files/grey_stack/Image_'];
+else
+    %     prefin = uigetdir(path);
+    %     prefin = [prefin, filesep];
+    prefin = [dataDir 'Files/Images/Image_'];
+end
 suffin = '.tif';
 
 dmask = 50;                 % Parameters for the brain mask
-sizeRange = [3 200];        % Size filter (pixels)
+sizeRange = [5 200];        % Size filter (pixels)
 thCorr = 0.05;              % Correlation filter
 
 % =========================================================================
@@ -18,13 +25,14 @@ for layer = Layers
     
     
     clear Img Mask Pre Pos coeff
-    % --- Load ---------------------------------------------------------------- 
+    % --- Load ----------------------------------------------------------------
     if ~exist('Img', 'var')
         D = dir([prefin '*' suffin]);
-        Img = double(imread([D(layer-2).folder filesep D(layer-2).name])); 
+        Img = imread([D(layer-2).folder filesep D(layer-2).name]);
+        
     end
- 
-    % --- Mask ----------------------------------------------------------------   
+    
+    % --- Mask ----------------------------------------------------------------
     if ~exist('Mask', 'var')
         try
             tic;load([dataDir, 'Files/signal_stacks/',num2str(layer) ,'/sig.mat']);toc
@@ -34,21 +42,35 @@ for layer = Layers
             Mask = logical(Mask);figure(100),imshow(Mask);
         catch
             load([F.Files 'signal_stacks/',num2str(layer) ,'/contour.mat'])
-            Mask = zeros(F.IP.height, F.IP.width);
+            Mask = zeros(size(Img, 1), size(Img, 2));
             Mask(w)=1;
-            imshow(Mask)
+            %imshow(Mask)
         end
     end
-
+    
     % --- Pre-process ---------------------------------------------------------
     if ~exist('Pre', 'var')
-        A = ordfilt2(Img, 5, ones(10));
-        B = ordfilt2(Img, 95, ones(10));
         if Nuc
+            % Remove the dark parts of the brain (Geoffrey)
+            img = imread([D(layer-2).folder filesep D(layer-2).name]);
+            img(rangefilt(Img) < mean2(rangefilt(Img))) = 0;
+            [B, L] = bwboundaries(img);
+            Img_cor = Img;
+            Img_cor(L == 0) = Inf;
+%             figure(3);
+%             imshowpair(imrotate(Img*5, 90), imrotate(Img_cor, 90), 'montage');
+
+            Img = double(Img);
+            A = ordfilt2(Img, 5, ones(10));
+            B = ordfilt2(Img, 95, ones(10));
             Pre = (B-Img)./(B-A);
+            Pre(L == 0) = 0;
         else
+            Img = double(img);
+            A = ordfilt2(Img, 5, ones(10));
+            B = ordfilt2(Img, 95, ones(10));
             Pre = (Img-A)./(B-A);
-        end  
+        end
     end
     
     % --- Watershed -----------------------------------------------------------
@@ -60,21 +82,21 @@ for layer = Layers
         Mask = logical(1-Mask);
         Mem_Wat = Wat;
         Wat(isnan(Wat)) = 0;
-        L = watershed(Wat);
+        L = watershed(Wat, 1);
         R = regionprops(L, {'Centroid', 'Area', 'PixelIdxList'});
         Pos = reshape([R(:).Centroid], [2 numel(R)])';
         Area = [R(:).Area];
         Plist = {R(:).PixelIdxList};
     end
-
+    
     % --- Filters -------------------------------------------------------------
-    if ~exist('coeff', 'var') 
+    if ~exist('coeff', 'var')
         pos = Pos;
         area = Area;
         plist = Plist;
         
         % --- Mask
-        I = Mask(sub2ind(size(Img), round(pos(:,2)), round(pos(:,1)))); 
+        I = Mask(sub2ind(size(Img), round(pos(:,2)), round(pos(:,1))));
         area = area(I);
         pos = pos(I,:);
         plist = plist(I);
@@ -84,7 +106,7 @@ for layer = Layers
         area = area(I);
         pos = pos(I,:);
         plist = plist(I);
-
+        
         % --- Correlation
         Raw = zeros(size(Img));
         Raw(sub2ind(size(Img), round(pos(:,2)), round(pos(:,1)))) = 1;
@@ -103,7 +125,7 @@ for layer = Layers
             Sub = Img(max(y-w,1):min(y+w, size(Img,1)), max(x-w,1):min(x+w, size(Img,2)));
             Sub2 = Res(max(y-w,1):min(y+w, size(Img,1)), max(x-w,1):min(x+w, size(Img,2)));
             coeff(i) = corr2(Sub, Sub2);
-            if ~mod(i, round(size(pos,1)/10)), fprintf('.'); end 
+            if ~mod(i, round(size(pos,1)/10)), fprintf('.'); end
         end
         
         I = coeff>=thCorr;
@@ -111,7 +133,7 @@ for layer = Layers
         area = area(I);
         pos = pos(I,:);
         plist = plist(I);
-        figure(1);imshow(Mem_Wat);hold on;plot(round(pos(:,1)), round(pos(:,2)),'g*');
+        %figure(1);imshow(Img/10000);hold on;plot(round(pos(:,1)), round(pos(:,2)),'g*');
         
     end
     
@@ -119,7 +141,7 @@ for layer = Layers
     Raw = zeros(size(Img));
     Raw(sub2ind(size(Img), round(pos(:,2)), round(pos(:,1)))) = 1;
     Wat = bwdist(Raw);
-    L = watershed(Wat);
+    %L = watershed(Wat);
     R = regionprops(L, {'Centroid', 'Area', 'PixelIdxList'});
     pos = reshape([R(:).Centroid], [2 numel(R)])';
     area = [R(:).Area];
@@ -132,17 +154,21 @@ for layer = Layers
     area = area(I);
     pos = pos(I,:);
     plist = plist(I);
-    plot(round(pos(:,1)), round(pos(:,2)),'r*');
+    %plot(round(pos(:,1)), round(pos(:,2)),'r*');
     
     % --- Display -------------------------------------------------------------
-    figure(2);hold on;
+    figure(1);hold on;
     Resc = (Img-min(Img(:)))/(max(Img(:))-min(Img(:)));
     Grid = ones(size(Img))*0.8;
     for i = 1:numel(plist)
         Grid(plist{i}) = 1;
     end
     CD = cat(3, Resc, Resc.*Grid, Resc);
-    imshow(CD)
+    %imshow(CD*2)
+    Img(imbinarize(Grid)==0) = max(max(Img));
+    Img_cor(Mask == 0) = Inf;
+    imshowpair(imrotate(Img*10, 90), imrotate(Img_cor*15, 90), 'montage');
+    pause(1)
     
     % --- Save ----------------------------------------------------------------
     outDir = [dataDir 'Segmented/'];

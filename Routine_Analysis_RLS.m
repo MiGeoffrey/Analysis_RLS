@@ -2,10 +2,10 @@
 addpath('/home/ljp/Science/Projects/RLS/Programs')
 
 %% Parameters
-date = '2018-05-22';
-run_number = [6,20,24];
+date = '0000-00-00';
+run_number = 1;
 Layers_stack_ref = [3:10];%Layers used to create the reference stack to perform the drift correction
-Layers = [3:20];
+Layers = [15:20];
 ind_Refstack = 10; % determine index of reference brain scan for drift correction
 binsize = 1;
 fstim = 0.2;
@@ -27,7 +27,7 @@ AntiDrift_OpenSpim_v3(Layers_stack_ref, Layers, F, ind_Refstack, 'false');
 
 AntiDrift_OpenSpim_v3(Layers_stack_ref, Layers, F, ind_Refstack, 'true');
 
-segmentation(Layers,F);
+segmentation(Layers,F,1);
 
 create_signal_stack_RLS_v2(Layers, binsize, F, ind_Refstack);
 
@@ -35,9 +35,11 @@ DFF_bg(Layers,F);
 
 SaveFor3DViewer(Layers,F);
 
-PhaseMap_pix_RLS_value_normlized(fstim, Layers,F)
+PhaseMap_pix_RLS_value_normlized(fstim, Layers,F);
 
-regression_motor(StartLayer,pstim)
+regression_motor(StartLayer,pstim);
+
+cmtk_registration_RLS(F, RefBrain);
 
 %% Workbench
 

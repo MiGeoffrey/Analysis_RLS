@@ -6,13 +6,13 @@ for layer = Layers
     catch ME
         %Limg = @(n) double(imread([F.Data 'Images/' F.IP.prefix num2str(n, F.IP.format) '.tif']));
         %Img1 = Limg(size(F.sets,2)*(ind_Refstack-1)+(layer-1)); 
-        Img1 = imread(['/Users/migault/Desktop/Images/Image_0_000' num2str(layer, '%02i') '.tif']);
+        Img1 = imread('/Users/migault/Desktop/Images/Image_0_00013.tif');
         Img1sm = imresize(Img1,1/binsize);
         
         % Auto brain countour
         bg_img = mean2(Img1sm);
         H = fspecial('disk',20);
-        tmp1 = imfilter(Img1sm,H,'replicate');
+        tmp1 = imfilter(localcontrast(Img1sm, 0.1, 0.5),H,'replicate');
         tmp2 = Img1sm*0;
         tmp2(tmp1>bg_img*(1-(0.005*layer))) = 1;
         tmp2 = bwareaopen(tmp2,(size(Img1sm,1)*size(Img1sm,2))/4);
@@ -21,7 +21,7 @@ for layer = Layers
         clear L;
         figure(100);imshow(rescalegd(Img1sm));
         hold on
-        [x, y] = reducem(B{1}(:,1), B{1}(:,2), 40);
+        [x, y] = reducem(B{1}(:,1), B{1}(:,2), 10);
         boundary = [y, x];
         for k = 1:length(B)
             plot(boundary(:,1), boundary(:,2), 'r', 'LineWidth', 2)
