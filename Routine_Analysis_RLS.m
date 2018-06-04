@@ -29,13 +29,13 @@ AntiDrift_OpenSpim_v3(Layers_stack_ref, Layers, F, ind_Refstack, 'true');
 
 segmentation(Layers,F,1);
 
-create_signal_stack_RLS_v2(Layers, binsize, F, ind_Refstack);
+create_signal_stack_RLS_v2(Layers, binsize, F, ind_Refstack); % 1300 seconds for 18 layers
 
-DFF_bg(Layers,F);
+DFF_bg(Layers,F); % 800 seconds for 18 layers
 
 SaveFor3DViewer(Layers,F);
 
-PhaseMap_pix_RLS_value_normlized(fstim, Layers,F);
+PhaseMap_pix_RLS_value_normlized(fstim, Layers,F); % 500 seconds for 18 layers
 
 regression_motor(StartLayer,pstim);
 
@@ -43,11 +43,17 @@ cmtk_registration_RLS(F, RefBrain);
 
 %% Workbench
 
-for run_number = [6,20,24]
+for run_number = [7]
+    Routines.Config(date, run_number);
     F = getFocus(date, run_number);
-    tic;
-    PhaseMap_pix_RLS_value_normlized(fstim, Layers,F)
-    toc;
+    create_contour_RLS(Layers, F, ind_Refstack,binsize);
 end
 
+for run_number = [21]
+    F = getFocus(date, run_number);
+    AntiDrift_OpenSpim_v3(Layers_stack_ref, Layers, F, ind_Refstack, 'false');
+    AntiDrift_OpenSpim_v3(Layers_stack_ref, Layers, F, ind_Refstack, 'true');
+    create_signal_stack_RLS_v2(Layers, binsize, F, ind_Refstack);
+    DFF_bg(Layers,F);
+end
 
