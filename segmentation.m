@@ -133,7 +133,7 @@ for layer = Layers
         area = area(I);
         pos = pos(I,:);
         plist = plist(I);
-        %figure(1);imshow(Img/10000);hold on;plot(round(pos(:,1)), round(pos(:,2)),'g*');
+        figure(1);imshow(Img/10000);hold on;plot(round(pos(:,1)), round(pos(:,2)),'g*');
         
     end
     
@@ -157,7 +157,7 @@ for layer = Layers
     %plot(round(pos(:,1)), round(pos(:,2)),'r*');
     
     % --- Display -------------------------------------------------------------
-    figure(1);hold on;
+    figure(2);hold on;
     Resc = (Img-min(Img(:)))/(max(Img(:))-min(Img(:)));
     Grid = ones(size(Img))*0.8;
     for i = 1:numel(plist)
@@ -167,7 +167,7 @@ for layer = Layers
     %imshow(CD*2)
     Img(imbinarize(Grid)==0) = max(max(Img));
     Img_cor(Mask == 0) = Inf;
-    imshowpair(imrotate(Img*10, 90), imrotate(Img_cor*15, 90), 'montage');
+    imshowpair(imrotate(Img*10, 90), imrotate(Img_cor*5, 90), 'montage');
     pause(1)
     
     % --- Save ----------------------------------------------------------------
