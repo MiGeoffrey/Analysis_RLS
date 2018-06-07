@@ -1,11 +1,11 @@
 %% calculate mean of phase maps
 clear all
 
-RefBrain= 'LJPBrain_flipped';
-manip{1} = getFocus('2017-07-12',6)
-% manip{2} = getFocus('2016-12-07',3)
-% manip{3} = getFocus('2016-12-07',3)
-for k = 1
+RefBrain= 'Run18_2018-05-22';
+manip{1} = getFocus('2018-05-22',24)
+manip{2} = getFocus('2018-05-22',20)
+manip{3} = getFocus('2018-05-22',6)
+for k = (1:3)
     k
     F = manip{k};
     %F = getFocus('2016-12-07',3);
@@ -26,7 +26,7 @@ for k = 1
     clear i
     Z(:,:,:,k) = Ia(:,:,:,k) + i * Ib(:,:,:,k);
 
-    v_max = 50;
+    v_max = 0.3;
     % thres = 5;
     clear imhsv
     for l= 1:size(Z(:,:,:,k),3)
@@ -46,7 +46,7 @@ for k = 1
         % Save images
         outdir = [F.Files 'Phase_map/PhaseMap_RGB_' RefBrain];
         [status,message,messageid] = mkdir(outdir);
-        imwrite(hsv2rgb(imhsv),[outdir '/' F.IP.prefix, num2str(l,'%02d') '.' F.IP.extension]);
+        %imwrite(hsv2rgb(imhsv),[outdir '/' F.IP.prefix, num2str(l,'%02d') '.' F.IP.extension]);
     end
 
 
@@ -64,18 +64,20 @@ end
 
 %% calculate mean
 clear i
-Z(:,:,:,:) = Ia + i * Ib;
+Ia_mean = mean(Ia,4);
+Ib_mean = mean(Ib,4);
+%Z(:,:,:,:) = Ia + i * Ib;
 Zm = mean(Z,4);
 %l=8;
 %Zm = Z(:,:,:,1);
 %%
-v_max = 50;
+v_max = 0.3;
 % thres = 5;
 clear imhsv
 for l= 1:size(Zm,3)
-imhsv(:,:,1) =   mod(atan2(Ib(:,:,l),Ia(:,:,l)) , 2*pi) / (2*pi);             
-imhsv(:,:,2) =   Ia(:,:,l,1)*0+1;                  
-imhsv(:,:,3) =   sqrt( Ia(:,:,l).^2 + Ib(:,:,l).^2 )/v_max;                 %       
+imhsv(:,:,1) =   mod(atan2(Ib_mean(:,:,l),Ia_mean(:,:,l)) , 2*pi) / (2*pi);             
+imhsv(:,:,2) =   Ia_mean(:,:,l,1)*0+1;                  
+imhsv(:,:,3) =   sqrt( Ia_mean(:,:,l).^2 + Ib_mean(:,:,l).^2 )/v_max;                 %       
 
 
 %[rows, cols] = find(imhsv(:,:,3) < thres);

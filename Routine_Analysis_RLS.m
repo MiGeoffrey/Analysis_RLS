@@ -2,10 +2,10 @@
 addpath('/home/ljp/Science/Projects/RLS/Programs')
 
 %% Parameters
-date = '0000-00-00';
-run_number = 1;
+date = '2018-05-22';
+run_number = 24;
 Layers_stack_ref = [3:10];%Layers used to create the reference stack to perform the drift correction
-Layers = [15:20];
+Layers = [3:20];
 ind_Refstack = 10; % determine index of reference brain scan for drift correction
 binsize = 1;
 fstim = 0.2;
@@ -37,9 +37,13 @@ SaveFor3DViewer(Layers,F);
 
 PhaseMap_pix_RLS_value_normlized(fstim, Layers,F); % 500 seconds for 18 layers
 
+Plot_phase_pix_v3_normalized(0.3, 0, 0.2, Layers, F);
+
 regression_motor(StartLayer,pstim);
 
-cmtk_registration_RLS(F, RefBrain);
+cmtk_registration_RLS(F, 'Run18_2018-05-22');
+
+convertCoordinates_RLS(coordinates, xformlist, param3)
 
 %% Workbench
 

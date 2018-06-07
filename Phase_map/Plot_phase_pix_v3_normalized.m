@@ -1,12 +1,10 @@
-function Plot_phase_pix(v_max, tresh, fstim, First_layer)
+function Plot_phase_pix_v3_normalized(v_max, tresh, fstim, First_layer, F)
 
 % Plot the phase map per mixel with the file "out_all.mat".
 % v_max: Max value (Max(value(:))/2)
 % tresh: Treshold value
 
 %% ---- Plot phase map per pixel -----
-
-F = getFocus;
 
 load([F.Files 'Phase_map_normalized/PhaseMap_DFF_pix_fstim' num2str(fstim) '/out_all.mat']);
 
@@ -28,8 +26,8 @@ for layer = First_layer%3:numel(F.sets);
     Ia(ind) = value .* cos(phi);
     Ib(ind) = value .* sin(phi);
     
-    Ia_stack(:,:,layer) = Ia;
-    Ib_stack(:,:,layer) = Ib;
+    Ia_stack(:,:,layer-2) = imrotate(Ia, 90);
+    Ib_stack(:,:,layer-2) = imrotate(Ib, 90);
     
 %% Preview
 % clear imhsv
@@ -42,11 +40,11 @@ for layer = First_layer%3:numel(F.sets);
 
     
     
-    v_max = v_max; % Max(value(:))/2;
+    %v_max = v_max; % Max(value(:))/2;
     for i = 1 : length(ind)
         I1(ind(i)) = mod(deltaphi(i),2*pi)/(2*pi);
         tmp = value(i)/v_max;
-        if value(i) > tresh;
+        if value(i) > tresh
             I3(ind(i)) = tmp;
         end
     end
@@ -63,7 +61,7 @@ for layer = First_layer%3:numel(F.sets);
     parameters.fstim  = fstim;
 
     
-   figure;imshow(hsv2rgb(imhsv))
+   %figure;imshow(hsv2rgb(imhsv))
     
     % Save images
     outdir = [F.Files 'Phase_map_normalized/PhaseMap_RGB'];
@@ -85,11 +83,11 @@ for layer = First_layer%3:numel(F.sets);
  
     outdir = [F.Files 'Phase_map_normalized/PhaseMap_a'];
     mkdir(outdir);
-    imwrite(Ia,[outdir '/' F.IP.prefix, num2str(layer,'%02d') '.' F.IP.extension])
+    imwrite(imrotate(Ia, 90),[outdir '/' F.IP.prefix, num2str(layer,'%02d') '.' F.IP.extension])
 
     outdir = [F.Files 'Phase_map_normalized/PhaseMap_b'];
     mkdir(outdir);
-    imwrite(Ib,[outdir '/' F.IP.prefix, num2str(layer,'%02d') '.' F.IP.extension])
+    imwrite(imrotate(Ib, 90),[outdir '/' F.IP.prefix, num2str(layer,'%02d') '.' F.IP.extension])
 
 end
 
@@ -107,7 +105,7 @@ outFolder = [F.Files 'Registration/floating-stacks/'];
 % settings
 param.exp_type = '';
 param.binning = [1 1];
-param.pix_size = [-0.8 -0.8 -10];%[F.dx F.sets(2).z - F.sets(1).z] % cmtk space is right-anterior-superior
+param.pix_size = [0.8 0.8 -10];%[F.dx F.sets(2).z - F.sets(1).z] % cmtk space is right-anterior-superior
 param.space_type = 'RAS';
 param.pixelspacing=...
 [param.pix_size(1) param.pix_size(2) param.pix_size(3)].* ...

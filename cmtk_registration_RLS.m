@@ -19,17 +19,17 @@ reformat_zBrain = 0;
 param.exp_type = '';
 param.binning = [1 1];
 %param.pix_size = [0.8 0.8 2]; % Parameters for the LJP brain
-param.pix_size = [0.4 -0.4 -10] % Raw data head on the bottom;%[F.dx F.sets(2).z - F.sets(1).z] % cmtk space is right-anterior-superior
+param.pix_size = [0.8 0.8 -10] % Raw data head on the bottom;%[F.dx F.sets(2).z - F.sets(1).z] % cmtk space is right-anterior-superior
 param.space_type = 'RAS';
 
 % define cmkt folder
-cmtkdir= '/Users/Projects/RLS/Tools/Fiji.app/bin/cmtk/';
+cmtkdir= 'cmtk ';
 
 % define folder where registration is saved
 RegistrationDir = 'Registration/';
 
 % get refbrain path
-RefBrain_Folder = '/Users/Projects/RLS/Data/RefBrains/';
+RefBrain_Folder = '/home/ljp/Science/Projects/RLS/Data/RefBrains/';
 switch RefBrain
     case 'ZBrain'
         RefBrain_path=[RefBrain_Folder 'ZBrain_Elavl3-GCaMP5G_6dpf_MeanImageOf7Fish_01_ras.nrrd'];%reference brain used for all transformation
@@ -44,12 +44,14 @@ switch RefBrain
         RefBrain_path= [RefBrain_Folder 'Ref_sym_2016-12-03_Run3.nrrd'];%reference brain used for all transformation
     case 'LJPBrain_flipped'
         RefBrain_path= [RefBrain_Folder 'LJP_mean_refbrain_01_flipped_ras.nrrd'];%reference brain used for all transformation
+    case 'Run18_2018-05-22'
+        RefBrain_path= ['/home/ljp/Science/Projects/RLS/Data/RefBrains/Run18_2018-05-22_stack_ras_maponZBrain.nrrd'];%reference brain used for all transformation        
 end
 
 %% make nrrd of a stack saved as image sequence in a folder in F.Files
 if make_nrrd 
     % === define in and output folders
-    inFolder = 'grey_stack';
+    inFolder = 'grey_stack_ref';
     outName = [inFolder '_ras'];
     % === define save location of created nrrd stack
     outFolder = 'Registration/floating-stacks/';
@@ -64,8 +66,7 @@ switch RefBrain
         outFolder = 'Registration/affine_Ref_sym/';
 
         %param.pix_size = [-0.8 0.8 2];%
-        param.pix_size =[-0.8 0.8 -10]; 
-        Raw data head on the bottom; %[F.dx F.sets(2).z - F.sets(1).z] % cmtk space is right-anterior-superior
+        param.pix_size =[-0.8 0.8 -1]; %Raw data head on the bottom; %[F.dx F.sets(2).z - F.sets(1).z] % cmtk space is right-anterior-superior
         make_nrdd_stack_RLS_v2(inFolder,outFolder,outName, param);
 end
 %% register a floating stack on a selected reference brain
@@ -84,7 +85,7 @@ if register
     if warp
             stacks=[' --initial ./' TransAffine_path ' -o  ./' TransWarp_path  ' ' RefBrain_path ' ' FloatingStack_path  ];
             %options= 'warp -v --grid-spacing 40 --refine 2 --jacobian-weight 1e-5 --coarsest 6.4 --sampling 3.2 --accuracy 3.2 ';
-            option = 'warpx --fast --grid-spacing 100 --smoothness-constraint-weight 1e-1 --grid -refine 2 --min-stepsize 0.25 --adaptive-fix-thresh 0.25';
+            options = 'warpx --fast --grid-spacing 100 --smoothness-constraint-weight 1e-1 --grid -refine 2 --min-stepsize 0.25 --adaptive-fix-thresh 0.25';
     else
             stacks=['-o ./' TransAffine_path  ' ' RefBrain_path ' ' FloatingStack_path  ];
             % option , path where transformation is saved , location of ref brain, location of floating strack to map on ref brain
@@ -105,7 +106,7 @@ switch RefBrain
     delimiter = {'\t',' '};
     formatSpec = '%q%q%q%f%f%f%[^\n\r]';
     fileID = fopen(filename,'r');
-        dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'EmptyValue' ,-1.0, 'ReturnOnError', false);
+    dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'EmptyValue' ,-1.0, 'ReturnOnError', false);
     fclose(fileID);
     dataArray([4, 5, 6]) = cellfun(@(x) num2cell(x), dataArray([4, 5, 6]), 'UniformOutput', false);
     registration = [dataArray{1:end-1}];
@@ -136,9 +137,9 @@ ReformatedStack_path = [ RegistrationDir 'reformatted_' RefBrain '/' float_name 
 
 if reformat
     if warp
-        command=['"' cmtkdir 'reformatx" -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransWarp_path];
+        command=['' cmtkdir 'reformatx -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransWarp_path];
     else
-        command=['"' cmtkdir 'reformatx" -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransAffine_path ];
+        command=['' cmtkdir 'reformatx -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransAffine_path ];
     end
     unix(command, '-echo');
 end
@@ -156,9 +157,9 @@ if reformat_reg
         ReformatedStack_path = [ RegistrationDir 'reformatted_' RefBrain '/' stack_list(i).name];   % output stack
         if reformat
             if warp
-                command=['"' cmtkdir 'reformatx" -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransWarp_path];
+                command=['' cmtkdir 'reformatx -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransWarp_path];
             else
-                command=['"' cmtkdir 'reformatx" -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransAffine_path];
+                command=['' cmtkdir 'reformatx -o ' ReformatedStack_path ' --floating ' FloatingStack_path ' ' RefBrain_path ' ' TransAffine_path];
             end
             unix(command, '-echo');
         end
