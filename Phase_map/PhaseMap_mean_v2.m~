@@ -7,9 +7,9 @@ manip{1} = getFocus('0000-00-00',01);
 manip{2} = getFocus('0000-00-00',01);
 manip{3} = getFocus('0000-00-00',01);
 
-%% 
+%%
 for k = (1:size(manip, 2))
-    display(['Manip = ' num2str(k)]);
+    k
     F = manip{k};
     cd([F.Files 'Registration/reformatted_' RefBrain '/']);
     
@@ -19,33 +19,37 @@ for k = (1:size(manip, 2))
     file = dir('*b_ras*');
     Ib(:,:,:,k) = double(nrrdread(file.name));
     
-    % Save phase registered phase map
+    % save phase registered phase map
     clear i
     Z(:,:,:,k) = Ia(:,:,:,k) + i * Ib(:,:,:,k);
     
     v_max = 0.3;
+    % thres = 5;
     clear imhsv
-    for l = 1:size(Z(:,:,:,k),3)
+    for l= 1:size(Z(:,:,:,k),3)
+        l
         imhsv(:,:,1) =   mod(atan2(Ib(:,:,l,k),Ia(:,:,l,k)) , 2*pi) / (2*pi);
         imhsv(:,:,2) =   Ia(:,:,l,1)*0+1;
         imhsv(:,:,3) =   sqrt( Ia(:,:,l,k).^2 + Ib(:,:,l,k).^2 )/v_max;
+        % Save images
         outdir = [F.Files 'Phase_map/PhaseMap_RGB_' RefBrain];
         [status,message,messageid] = mkdir(outdir);
     end
 end
 
-%% Calculate mean
+%% calculate mean
 clear i
 Ia_mean = mean(Ia,4);
 Ib_mean = mean(Ib,4);
-
-%% Save RGB images
+%%
 v_max = 0.3;
 clear imhsv
 for l = 1:size(Zm,3)
     imhsv(:,:,1) =   mod(atan2(Ib_mean(:,:,l),Ia_mean(:,:,l)) , 2*pi) / (2*pi);
     imhsv(:,:,2) =   Ia_mean(:,:,l,1)*0+1;
     imhsv(:,:,3) =   sqrt( Ia_mean(:,:,l).^2 + Ib_mean(:,:,l).^2 )/v_max;
+    
+    % Save images
     outdir = [F.Files 'Phase_map_mean/PhaseMap_RGB_' RefBrain];
     mkdir(outdir);
     imwrite(hsv2rgb(imhsv),[outdir '/' F.IP.prefix, num2str(l,'%02d') '.' F.IP.extension]);

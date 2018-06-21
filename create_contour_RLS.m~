@@ -6,22 +6,31 @@ for layer = Layers
     catch ME
         %Limg = @(n) double(imread([F.Data 'Images/' F.IP.prefix num2str(n, F.IP.format) '.tif']));
         %Img1 = Limg(size(F.sets,2)*(ind_Refstack-1)+(layer-1)); 
-        Img1 = imread('/Users/migault/Desktop/Images/Image_0_00013.tif');
+        Img1 = imread([F.Files 'grey_stack/Image_0_000' num2str(layer, '%02i') '.tif']);
         Img1sm = imresize(Img1,1/binsize);
         
         % Auto brain countour
-        bg_img = mean2(Img1sm);
+
+            Img1sm_2 = Img1sm;
+            Img1sm_2(rangefilt(Img1sm) < mean2(rangefilt(Img1sm))/(layersize(F.sets, 2))) = 0;
+            [B, L] = bwboundaries(Img1sm_2);
+            Img_cor = Img1sm;
+            Img_cor(L == 0) = 0;
+            Img1sm_cor = Img_cor*40;
+            imshow(Img1sm*40);
+            
+        bg_img = mean2(Img1sm_cor);
         H = fspecial('disk',20);
-        tmp1 = imfilter(localcontrast(Img1sm, 0.1, 0.5),H,'replicate');
-        tmp2 = Img1sm*0;
+        tmp1 = imfilter(Img1sm_cor,H,'replicate');
+        tmp2 = Img1sm_cor*0;
         tmp2(tmp1>bg_img*(1-(0.005*layer))) = 1;
-        tmp2 = bwareaopen(tmp2,(size(Img1sm,1)*size(Img1sm,2))/4);
+        tmp2 = bwareaopen(tmp2,(size(Img1sm_cor,1)*size(Img1sm_cor,2))/4);
         
         [B, L] = bwboundaries(tmp2,'noholes');
         clear L;
-        figure(100);imshow(rescalegd(Img1sm));
+        figure(102);imshow(rescalegd(Img1sm));
         hold on
-        [x, y] = reducem(B{1}(:,1), B{1}(:,2), 10);
+        [x, y] = reducem(B{1}(:,1), B{1}(:,2), 20);
         boundary = [y, x];
         for k = 1:length(B)
             plot(boundary(:,1), boundary(:,2), 'r', 'LineWidth', 2)

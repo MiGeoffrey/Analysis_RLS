@@ -16,7 +16,7 @@ end
 suffin = '.tif';
 
 dmask = 50;                 % Parameters for the brain mask
-sizeRange = [5 200];        % Size filter (pixels)
+sizeRange = [10 150];        % Size filter (pixels)
 thCorr = 0.05;              % Correlation filter
 
 % =========================================================================
@@ -53,6 +53,7 @@ for layer = Layers
         if Nuc
             % Remove the dark parts of the brain (Geoffrey)
             img = imread([D(layer-2).folder filesep D(layer-2).name]);
+            figure(2);imshow(rangefilt(Img));
             img(rangefilt(Img) < mean2(rangefilt(Img))) = 0;
             [B, L] = bwboundaries(img);
             Img_cor = Img;
@@ -64,7 +65,7 @@ for layer = Layers
             A = ordfilt2(Img, 5, ones(10));
             B = ordfilt2(Img, 95, ones(10));
             Pre = (B-Img)./(B-A);
-            Pre(L == 0) = 0;
+            %Pre(L == 0) = 0;
         else
             Img = double(img);
             A = ordfilt2(Img, 5, ones(10));
@@ -82,7 +83,7 @@ for layer = Layers
         Mask = logical(1-Mask);
         Mem_Wat = Wat;
         Wat(isnan(Wat)) = 0;
-        L = watershed(Wat, 1);
+        L = watershed(Wat);
         R = regionprops(L, {'Centroid', 'Area', 'PixelIdxList'});
         Pos = reshape([R(:).Centroid], [2 numel(R)])';
         Area = [R(:).Area];
@@ -133,7 +134,7 @@ for layer = Layers
         area = area(I);
         pos = pos(I,:);
         plist = plist(I);
-        figure(1);imshow(Img/10000);hold on;plot(round(pos(:,1)), round(pos(:,2)),'g*');
+        %figure(1);imshow(Img/10000);hold on;%plot(round(pos(:,1)), round(pos(:,2)),'g*');
         
     end
     
@@ -141,7 +142,7 @@ for layer = Layers
     Raw = zeros(size(Img));
     Raw(sub2ind(size(Img), round(pos(:,2)), round(pos(:,1)))) = 1;
     Wat = bwdist(Raw);
-    %L = watershed(Wat);
+    L = watershed(Wat);
     R = regionprops(L, {'Centroid', 'Area', 'PixelIdxList'});
     pos = reshape([R(:).Centroid], [2 numel(R)])';
     area = [R(:).Area];
@@ -154,22 +155,41 @@ for layer = Layers
     area = area(I);
     pos = pos(I,:);
     plist = plist(I);
-    %plot(round(pos(:,1)), round(pos(:,2)),'r*');
+    
+    % --- Mask 2
+    Mask_2 = imbinarize(Img_cor);
+    Mask_2 = logical(1-Mask_2);
+    I = Mask_2(sub2ind(size(Img), round(pos(:,2)), round(pos(:,1))));
+    area = area(I);
+    pos = pos(I,:);
+    plist = plist(I);
+    %figure(1);plot(round(pos(:,1)), round(pos(:,2)),'r*');
     
     % --- Display -------------------------------------------------------------
-    figure(2);hold on;
     Resc = (Img-min(Img(:)))/(max(Img(:))-min(Img(:)));
     Grid = ones(size(Img))*0.8;
     for i = 1:numel(plist)
         Grid(plist{i}) = 1;
     end
-    CD = cat(3, Resc, Resc.*Grid, Resc);
-    %imshow(CD*2)
-    Img(imbinarize(Grid)==0) = max(max(Img));
+    figure(1);hold on;
+    title(['Layer: ' num2str(layer)])
+    Img_grid = Img;
+    Img_grid(imbinarize(Grid)==0) = max(max(Img));
     Img_cor(Mask == 0) = Inf;
-    imshowpair(imrotate(Img*10, 90), imrotate(Img_cor*5, 90), 'montage');
+    subplot(1,3,1);
+    imshow(imrotate(uint16(Img)*5, 90));    
+    subplot(1,3,2);
+    imshow(imrotate(Img_cor*7, 90));
+    subplot(1,3,3);
+    imshow(imrotate(uint16(Img_grid)*5, 90));
+    %imshowpair(imrotate(uint16(Img)*5, 90), imrotate(Img_cor*7, 90), 'montage');
     pause(1)
     
+%     figure(2);hold on;
+    %CD = cat(3, Resc, Resc.*Grid, Resc)*5;
+    CD = uint16(Img_grid)*5;
+%     imshow(CD*2)
+
     % --- Save ----------------------------------------------------------------
     outDir = [dataDir 'Segmented/'];
     if ~exist(outDir, 'dir')

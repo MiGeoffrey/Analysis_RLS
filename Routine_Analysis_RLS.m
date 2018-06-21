@@ -2,8 +2,8 @@
 addpath('/home/ljp/Science/Projects/RLS/Programs')
 
 %% Parameters
-date = '2018-05-22';
-run_number = 24;
+date = '0000-00-00';
+run_number = 1;
 Layers_stack_ref = [3:10];%Layers used to create the reference stack to perform the drift correction
 Layers = [15];
 ind_Refstack = 10; % determine index of reference brain scan for drift correction
