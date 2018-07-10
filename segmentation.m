@@ -28,32 +28,33 @@ for layer = Layers
     % --- Load ----------------------------------------------------------------
     if ~exist('Img', 'var')
         D = dir([prefin '*' suffin]);
-        Img = imread([D(layer-2).folder filesep D(layer-2).name]);
+        Img = imread([D(layer).folder filesep D(layer).name]);
         
     end
     
     % --- Mask ----------------------------------------------------------------
-    if ~exist('Mask', 'var')
-        try
-            tic;load([dataDir, 'Files/signal_stacks/',num2str(layer) ,'/sig.mat']);toc
-            Mask = DD.imgref*0;
-            Mask(DD.index) = 1;
-            Mask(~DD.index) = 0;
-            Mask = logical(Mask);figure(100),imshow(Mask);
-        catch
-            load([F.Files 'signal_stacks/',num2str(layer) ,'/contour.mat'])
-            Mask = zeros(size(Img, 1), size(Img, 2));
-            Mask(w)=1;
-            %imshow(Mask)
-        end
-    end
+%     if ~exist('Mask', 'var')
+%         try
+%             tic;load([dataDir, 'Files/signal_stacks/',num2str(layer) ,'/sig.mat']);toc
+%             Mask = DD.imgref*0;
+%             Mask(DD.index) = 1;
+%             Mask(~DD.index) = 0;
+%             Mask = logical(Mask);figure(100),imshow(Mask);
+%         catch
+%             load([F.Files 'signal_stacks/',num2str(layer) ,'/contour.mat'])
+%             Mask = zeros(size(Img, 1), size(Img, 2));
+%             Mask(w)=1;
+%             %imshow(Mask)
+%         end
+%     end
     
+    Mask = Img*0+1;
     % --- Pre-process ---------------------------------------------------------
     if ~exist('Pre', 'var')
         if Nuc
             % Remove the dark parts of the brain (Geoffrey)
-            img = imread([D(layer-2).folder filesep D(layer-2).name]);
-            figure(2);imshow(rangefilt(Img));
+            img = imread([D(layer).folder filesep D(layer).name]);
+            %figure(2);imshow(rangefilt(Img));
             img(rangefilt(Img) < mean2(rangefilt(Img))) = 0;
             [B, L] = bwboundaries(img);
             Img_cor = Img;
@@ -62,6 +63,7 @@ for layer = Layers
 %             imshowpair(imrotate(Img*5, 90), imrotate(Img_cor, 90), 'montage');
 
             Img = double(Img);
+            Img(Img_cor == Inf) = Inf;
             A = ordfilt2(Img, 5, ones(10));
             B = ordfilt2(Img, 95, ones(10));
             Pre = (B-Img)./(B-A);
@@ -165,6 +167,10 @@ for layer = Layers
     plist = plist(I);
     %figure(1);plot(round(pos(:,1)), round(pos(:,2)),'r*');
     
+    
+    [idx, idx_] = select_neurons_manually(pos, R);
+    
+    
     % --- Display -------------------------------------------------------------
     Resc = (Img-min(Img(:)))/(max(Img(:))-min(Img(:)));
     Grid = ones(size(Img))*0.8;
@@ -177,25 +183,28 @@ for layer = Layers
     Img_grid(imbinarize(Grid)==0) = max(max(Img));
     Img_cor(Mask == 0) = Inf;
     subplot(1,3,1);
-    imshow(imrotate(uint16(Img)*5, 90));    
+    imshow(imrotate(uint16(Img)*2, 90));    
     subplot(1,3,2);
-    imshow(imrotate(Img_cor*7, 90));
+    imshow(imrotate(Img_cor*2, 90));
     subplot(1,3,3);
-    imshow(imrotate(uint16(Img_grid)*5, 90));
+    CD = cat(3, Resc, Resc.*Grid, Resc)*1.5;
+    imshow(imrotate(CD, 90));
+    %imshow(imrotate(uint16(Img_grid)*2, 90));
     %imshowpair(imrotate(uint16(Img)*5, 90), imrotate(Img_cor*7, 90), 'montage');
     pause(1)
     
 %     figure(2);hold on;
-    %CD = cat(3, Resc, Resc.*Grid, Resc)*5;
-    CD = uint16(Img_grid)*5;
-%     imshow(CD*2)
+    %CD = uint16(Img_grid)*5;
+
 
     % --- Save ----------------------------------------------------------------
     outDir = [dataDir 'Segmented/'];
     if ~exist(outDir, 'dir')
         mkdir(outDir)
     end
-    imwrite(CD, [dataDir 'Segmented/Layer_' num2str(layer) '.png'])
+    savefig([outDir, 'Segmentation', num2str(layer)]);
+    saveas(gcf, [outDir, 'Segmentation', num2str(layer), '.svg']);
+    imwrite(CD, [dataDir 'Segmented/Layer_' num2str(layer) '.tif'])
     outname = [outDir 'Layer_' num2str(layer) '.mat'];
     save(outname, 'pos', 'plist');
     
