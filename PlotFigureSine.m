@@ -6,19 +6,23 @@ out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
 FigureOutPath = [MainPath, 'RLS/Data/AveragedPhaseMaps/Figure3Sine/'];
 mkdir(FigureOutPath);
 
+clear stack_path FigureName
 stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyes']; % stack of .tif images
 FigureName{1} = 'PhaseMapAverageWithEyes';
 
-stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
-FigureName{2} = 'PhaseMapAverageWithoutEyes';
-
-stack_path{3} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyesFree']; % stack of .tif images
-FigureName{3} = 'PhaseMapAverageWithEyesFree';
+% stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
+% FigureName{2} = 'PhaseMapAverageWithoutEyes';
+% 
+% stack_path{3} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyesFree']; % stack of .tif images
+% FigureName{3} = 'PhaseMapAverageWithEyesFree';
 
 %% Parameters
 BrainRegions = {'Diencephalon -' 'Rhombencephalon - Cerebellum' 'Mesencephalon - Tectum Stratum Periventriculare' ...
     'Rhombencephalon - Inferior Olive' 'Rhombencephalon - Spinal Backfill Vestibular Population' };
-BrainRegionsColors = {[1,0,0], [0,1,0], [0,0,1], [1,1,0], [1,0,1]};
+ColorMap = lines(size(BrainRegions, 2));
+for i = 1:size(BrainRegions, 2)
+    BrainRegionsColors{i} = {ColorMap(i,:)};
+end
 
 % brain_regions = {'Diencephalon -' 'Diencephalon - Habenula' 'Mesencephalon - Torus Longitudinalis' 'Rhombencephalon - Cerebellum' 'Rhombencephalon - Inferior Olive' ...
 %                 'Rhombencephalon - Oculomotor Nucleus nIV' 'Rhombencephalon - Spinal Backfill Vestibular Population' 'Rhombencephalon - Tangential Vestibular Nucleus' ...
@@ -43,9 +47,11 @@ for br = 1:size(BrainRegions, 2)
         img_brain_region = MaskDatabaseOutlines(height*width*(layer-1)+1:height*width*(layer),brain_region);
         img_brain_region = reshape(img_brain_region, [height, width]);
         img_brain_region = full(img_brain_region);
-        img_br(img_brain_region == 1) = 1;
+        img_br(flip(img_brain_region,2) == 1) = 1;
+        img_br2 = zeros(height, width);
+        img_br2(flip(img_brain_region,2) == 1) = 1;
         %BrainRegionStack(:,:,:,layer) = cat(3,img_br,img_br,img_br);
-        CountourBrainRegionsStack{br, Zs-layer+1} = bwboundaries(img_br);
+        CountourBrainRegionsStack{br, Zs-layer+1} = bwboundaries(img_br2);
         img_brX(:, layer) = max(img_brain_region,[], 2);
     end
     CountourBrainRegions{br} = bwboundaries(img_br);
@@ -74,8 +80,9 @@ CountourBrainX = bwboundaries(repelem(img_brX, 1, 2, 1));
 
 %%
 clf
-set(0,'DefaultFigureWindowStyle', 'docked');
+set(0,'DefaultFigureWindowStyle', 'normal');
 F1 = figure('Name', 'PhaseMapAverageZproj');
+F1.Position = [0,0,(2500/SBColumnNb),1000];
 for Exp = 1:size(stack_path, 2)
     %% Add the brain regions selected
     %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
@@ -128,6 +135,7 @@ for Exp = 1:size(stack_path, 2)
     %im2.AlphaData = max(imgZProj, [], 3)*1.3;
     axis off;
     hold on;
+    pbaspect([(width/height) 1 1]);
     
     % Plot Brain Countour
     C = [CountourBrain{1, 1}];
@@ -153,7 +161,7 @@ for Exp = 1:size(stack_path, 2)
         for i = 1:size(CountourBrainRegions{1,br},1)
             C = [CountourBrainRegions{1,br}{i,1}];
             P = plot(C(:,2),C(:,1));
-            P.Color = BrainRegionsColors{br};
+            P.Color = [BrainRegionsColors{br}{1}];
             P.LineWidth = 2;
             P.LineStyle = '--';
         end
@@ -172,6 +180,7 @@ for Exp = 1:size(stack_path, 2)
     %im2.AlphaData = max(imrotate(imgXProj, -90), [], 3)*1.3;
     axis off;
     hold on;
+    pbaspect([(size(imgXProj, 1)/size(imgXProj, 2)) 1 1]);
     
     % Plot Brain Countour
     C = [CountourBrainX{1, 1}];
@@ -197,7 +206,7 @@ for Exp = 1:size(stack_path, 2)
         for i = 1:size(CountourBrainRegionsX{1,br},1)
             C = [CountourBrainRegionsX{1,br}{i,1}];
             P = plot(C(:,2),C(:,1));
-            P.Color = BrainRegionsColors{br};
+            P.Color = [BrainRegionsColors{br}{1}];
             P.LineWidth = 2;
             P.LineStyle = '--';
         end
@@ -206,36 +215,76 @@ for Exp = 1:size(stack_path, 2)
     clear C;
 end
 %% Save Figures
+% Local
 saveas(F1, [FigureOutPath, '/', 'PhaseMapAverageZproj', '.fig']);
 saveas(F1, [FigureOutPath, '/',  'PhaseMapAverageZproj', '.svg']);
-
+% Nextcloud
+saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapAverageZproj', '.fig']);
+saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapAverageZproj'], 'svg');
+%% Phase Map Run 07
+PathPhaseMapRun07 = [MainPath, 'RLS/', 'Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb'];
+PathGreyStackRun07 = [MainPath, 'RLS/', 'Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_graystack_ON_zBrain_Elavl3-H2BRFP_198layers.nrrd']; 
+%% Load the grey stack of the Run 7
+imgGreyStacktmp = flip(uint16(nrrdread(PathGreyStackRun07)),1);
+imgGreyStack = uint16(zeros(height, width,3, Zs));
+for i = 1:Zs
+    imgGreyStack(:,:,:,i) = cat(3, imgGreyStacktmp(:,:,i), imgGreyStacktmp(:,:,i), imgGreyStacktmp(:,:,i));
+end
+%% Load the phase map stack of the Run 7
+    imgstack = uint8(zeros(height, width,3, Zs));
+    for layer = 1:Zs
+        disp(layer)
+        img = imread([PathPhaseMapRun07, '/layer', num2str(layer, '%02d'), '.tif']);
+        imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
+    end
 %%
-PathPhaseMapRun07 = [MainPath, 'RLS/']
 clf
-set(0,'DefaultFigureWindowStyle', 'docked');
 F2 = figure('Name', 'PhaseMapSingleFish');
+F2.Position = [0,0,600,1500];
 It = 1;
-layerSelected = (30:10:80);
+layerSelected = [30,35,40,47,54,63,69,75,81]%(35:5:75);
 for layer = layerSelected
     disp(layer);
     subplot(size(layerSelected, 2)/3, 3, It)
-    image(imgGreyStack(:,:,:,layer));
+    image(rescalegd2(imgGreyStack(:,:,:,Zs-layer+1)-mean2(imgGreyStack(:,:,:,Zs-69+1)*(1+layer/70))));%-(mean2(imgGreyStack(:,:,:,Zs-layer+1))/10));
     hold on;
     Im3 = image(imgstack(:,:,:,layer));
     Im3.AlphaData = max(imgstack(:,:,:,layer), [], 3)*1.3;
     title(['Layer number ', num2str(layer)]);
     axis off
+    pbaspect([(size(imgGreyStack(:,:,:,layer), 2)/size(imgGreyStack(:,:,:,layer), 1)) 1 1]);
     for br = 1:size(BrainRegions, 2)
-        for i = 1:size(CountourBrainRegionsStack{br,layer},1)
+        for i = 1:size(CountourBrainRegionsStack{br,layer},1)/2
+            clear C
             C = [CountourBrainRegionsStack{br,layer}{i,1}];
             P = plot(C(:,2),C(:,1));
-            P.Color = BrainRegionsColors{br};
-            P.LineWidth = 1;
+            P.Color = [BrainRegionsColors{br}{1}];
+            P.LineWidth = 0.5;
             P.LineStyle = '--';
         end
     end
+    % Plot Scale bar
+    x = 540;
+    y = 1360;
+    
+    RatioPixMicron = 0.8;
+    ScaleBar = 50; % Micron
+    patch([x, x, (x+ScaleBar/0.8), (x+ScaleBar/0.8)], [y, y+15, y+15, y], 'w');
+    T = text((x+(x+ScaleBar/0.8))/2, y+10, [num2str(ScaleBar), ' μm']);
+    T.HorizontalAlignment = 'center';
+    T.Color = 'w';
+    T.VerticalAlignment = 'top';
+    T.FontSize = 1;
     It = It + 1;
 end
 
+%% Save Figures
+% Local
+saveas(F2, [FigureOutPath, '/', 'PhaseMapSingleFish', '.fig']);
+saveas(F2, [FigureOutPath, '/',  'PhaseMapSingleFish', '.svg']);
+% Nextcloud
+saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFish', '.fig']);
+saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFish'], 'svg');
 
+%%
 
