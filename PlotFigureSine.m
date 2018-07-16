@@ -8,13 +8,13 @@ mkdir(FigureOutPath);
 
 clear stack_path FigureName
 stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyes']; % stack of .tif images
-FigureName{1} = 'PhaseMapAverageWithEyes';
+FigureName{1} = 'Phase Map Average With Eyes (n=6)';
 
-% stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
-% FigureName{2} = 'PhaseMapAverageWithoutEyes';
-% 
-% stack_path{3} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyesFree']; % stack of .tif images
-% FigureName{3} = 'PhaseMapAverageWithEyesFree';
+stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
+FigureName{2} = 'Phase Map Average Without Eyes (n=9)';
+ 
+stack_path{3} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyesFree']; % stack of .tif images
+FigureName{3} = 'PhaseMapAverageWithEyesFree';
 
 %% Parameters
 BrainRegions = {'Diencephalon -' 'Rhombencephalon - Cerebellum' 'Mesencephalon - Tectum Stratum Periventriculare' ...
@@ -61,35 +61,59 @@ end
 %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
 BrainCountourRegions = {'Diencephalon -' 'Rhombencephalon -' 'Mesencephalon -' 'Spinal Cord' 'Telencephalon -'};
 img_br = zeros(height, width);
+img_br_stack = zeros(height, width, Zs);
+CountourBrainStack = {1:Zs};
+for layer = 1:Zs
+    clc
+    disp(layer);
+    img_br_tmp = zeros(height, width);
+    for br = 1:size(BrainCountourRegions, 2)
+        brain_region = find(ismember(MaskDatabaseNames,BrainCountourRegions{br}));
+        MaskDatabaseNames(brain_region);
+        img_brain_region = MaskDatabase(height*width*(layer-1)+1:height*width*(layer),brain_region);
+        img_brain_region = reshape(img_brain_region, [height, width]);
+        img_brain_region = full(img_brain_region);
+        img_br_tmp(img_brain_region == 1) = 1;
+        img_br(img_brain_region == 1) = 1;
+    end
+    se = strel('line',10,10);
+    img_br_stack(:,:,layer) = flip(imdilate(img_br_tmp,se),2);
+    CountourBrainStack{Zs-layer+1} = bwboundaries(flip(imdilate(img_br_tmp,se),2), 'noholes');
+end
+CountourBrain = bwboundaries(img_br);
+disp('Finish Brain Countours')
+
+% X-projection countour
 img_brX = zeros(height, Zs);
 img_brX_tmp = zeros(height, Zs);
 for br = 1:size(BrainCountourRegions, 2)
+    clc
+    disp(br);
     for layer = 1:Zs
         brain_region = find(ismember(MaskDatabaseNames,BrainCountourRegions{br}));
         MaskDatabaseNames(brain_region);
-        img_brain_region = MaskDatabaseOutlines(height*width*(layer-1)+1:height*width*(layer),brain_region);
+        img_brain_region = MaskDatabase(height*width*(layer-1)+1:height*width*(layer),brain_region);
         img_brain_region = reshape(img_brain_region, [height, width]);
         img_brain_region = full(img_brain_region);
-        img_br(img_brain_region == 1) = 1;
         img_brX_tmp(:, layer) = max(img_brain_region,[], 2);
     end
     img_brX(img_brX_tmp == 1) = 1;
 end
-CountourBrain = bwboundaries(img_br);
 CountourBrainX = bwboundaries(repelem(img_brX, 1, 2, 1));
-
+disp('Finish X-projection Brain Countours')
 %%
 clf
-set(0,'DefaultFigureWindowStyle', 'normal');
+%set(0,'DefaultFigureWindowStyle', 'normal');
 F1 = figure('Name', 'PhaseMapAverageZproj');
-F1.Position = [0,0,(2500/SBColumnNb),1000];
+F1.Position = [0,0,2500,1000];
+Zs = 50;
 for Exp = 1:size(stack_path, 2)
     %% Add the brain regions selected
     %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
     imgstack = uint8(zeros(height, width,3, Zs));
     imgGreyStack = uint8(zeros(height, width,3, Zs));
     for layer = 1:Zs
-        disp(layer)
+        clf;disp(layer)
         % Create an RGB image of the brain regions selected
         img_br = zeros(height, width);
         for br = 1:size(BrainRegions, 2)
@@ -226,9 +250,9 @@ PathPhaseMapRun07 = [MainPath, 'RLS/', 'Data/2018-05-24/Run 07/Analysis/Registra
 PathGreyStackRun07 = [MainPath, 'RLS/', 'Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_graystack_ON_zBrain_Elavl3-H2BRFP_198layers.nrrd']; 
 %% Load the grey stack of the Run 7
 imgGreyStacktmp = flip(uint16(nrrdread(PathGreyStackRun07)),1);
-imgGreyStack = uint16(zeros(height, width,3, Zs));
+imgGreyStackR7 = uint16(zeros(height, width,3, Zs));
 for i = 1:Zs
-    imgGreyStack(:,:,:,i) = cat(3, imgGreyStacktmp(:,:,i), imgGreyStacktmp(:,:,i), imgGreyStacktmp(:,:,i));
+    imgGreyStackR7(:,:,:,i) = cat(3, imgGreyStacktmp(:,:,i), imgGreyStacktmp(:,:,i), imgGreyStacktmp(:,:,i));
 end
 %% Load the phase map stack of the Run 7
     imgstack = uint8(zeros(height, width,3, Zs));
@@ -242,17 +266,23 @@ clf
 F2 = figure('Name', 'PhaseMapSingleFish');
 F2.Position = [0,0,600,1500];
 It = 1;
-layerSelected = [30,35,40,47,54,63,69,75,81]%(35:5:75);
+layerSelected = (10:5:50)%[30,35,40,47,54,63,69,75,81]%(35:5:75);
 for layer = layerSelected
     disp(layer);
     subplot(size(layerSelected, 2)/3, 3, It)
-    image(rescalegd2(imgGreyStack(:,:,:,Zs-layer+1)-mean2(imgGreyStack(:,:,:,Zs-69+1)*(1+layer/70))));%-(mean2(imgGreyStack(:,:,:,Zs-layer+1))/10));
+    
+    % Plot Grey Stack
+    image(rescalegd2(imgGreyStackR7(:,:,:,Zs-layer+1)-mean2(imgGreyStackR7(:,:,:,Zs-69+1)*(1+layer/70))));
     hold on;
+    
+    % Plot Phase map
     Im3 = image(imgstack(:,:,:,layer));
     Im3.AlphaData = max(imgstack(:,:,:,layer), [], 3)*1.3;
     title(['Layer number ', num2str(layer)]);
     axis off
-    pbaspect([(size(imgGreyStack(:,:,:,layer), 2)/size(imgGreyStack(:,:,:,layer), 1)) 1 1]);
+    pbaspect([(size(imgGreyStackR7(:,:,:,layer), 2)/size(imgGreyStackR7(:,:,:,layer), 1)) 1 1]);
+    
+    % Plot Brain Regions
     for br = 1:size(BrainRegions, 2)
         for i = 1:size(CountourBrainRegionsStack{br,layer},1)/2
             clear C
@@ -263,10 +293,10 @@ for layer = layerSelected
             P.LineStyle = '--';
         end
     end
+    
     % Plot Scale bar
     x = 540;
     y = 1360;
-    
     RatioPixMicron = 0.8;
     ScaleBar = 50; % Micron
     patch([x, x, (x+ScaleBar/0.8), (x+ScaleBar/0.8)], [y, y+15, y+15, y], 'w');
@@ -275,6 +305,16 @@ for layer = layerSelected
     T.Color = 'w';
     T.VerticalAlignment = 'top';
     T.FontSize = 1;
+    
+    % Plot Brain Countour
+    for i = 1:size(CountourBrainStack{layer},1)
+        C = [CountourBrainStack{layer}{1}];
+        P = plot(C(:,2),C(:,1));
+        P.Color = [1 1 1];
+        P.LineWidth = 0.5;
+        P.LineStyle = '-';
+    end
+    
     It = It + 1;
 end
 
