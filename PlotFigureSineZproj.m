@@ -193,7 +193,7 @@ for Exp = 1:size(stack_path, 2)
     % Plot Brain Countour
     C = [CountourBrain{1, 1}];
     B = plot(C(:,2),C(:,1));
-    B.Color = [1,1,1];
+    B.Color = [0.99 0.99 0.99];
     B.LineWidth = 2;
     B.LineStyle = '-';
     clear C;
@@ -206,8 +206,9 @@ for Exp = 1:size(stack_path, 2)
     patch([x, x, (x+ScaleBar/RatioPixMicron), (x+ScaleBar/RatioPixMicron)], [y, y+10, y+10, y], 'w');
     T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
     T.HorizontalAlignment = 'center';
-    T.Color = 'w';
-    T.VerticalAlignment = 'top'
+    T.Color = [0.99 0.99 0.99];
+    T.VerticalAlignment = 'top';
+    T.LineStyle = '-';
     
     % Plot Brain Regions Countours
     for br = 1:size(BrainRegions, 2)
@@ -239,7 +240,7 @@ for Exp = 1:size(stack_path, 2)
     % Plot Brain Countour
     C = [CountourBrainX{1, 1}];
     B = plot(C(:,2),C(:,1));
-    B.Color = [1,1,1];
+    B.Color = [0.99 0.99 0.99];
     B.LineWidth = 2;
     B.LineStyle = '-';
     clear C;
@@ -252,8 +253,9 @@ for Exp = 1:size(stack_path, 2)
     patch([x, x, (x+ScaleBar/RatioPixMicron), (x+ScaleBar/RatioPixMicron)], [y, y+10, y+10, y], 'w');
     T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
     T.HorizontalAlignment = 'center';
-    T.Color = 'w';
+    T.Color = [0.99 0.99 0.99];
     T.VerticalAlignment = 'top';
+    T.LineStyle = '-';
     
     % Plot Brain Regions Countours
     for br = 1:size(BrainRegions, 2)
