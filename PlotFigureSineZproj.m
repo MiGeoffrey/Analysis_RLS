@@ -7,6 +7,9 @@ FigureOutPath = [MainPath, 'RLS/Data/AveragedPhaseMaps/Figure3Sine/'];
 mkdir(FigureOutPath);
 
 clear stack_path FigureName
+
+%% Figure Phase Map Average Zpro
+SaveNameFigure = 'PhaseMapAverageZproj';
 stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyes']; % stack of .tif images
 FigureName{1} = 'Phase Map Average With Eyes (n=6)';
 ExpSaturation{1} = 1;
@@ -14,16 +17,13 @@ ExpSaturation{1} = 1;
 stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
 FigureName{2} = 'Phase Map Average Without Eyes (n=9)';
 ExpSaturation{2} = 2;
- 
-%stack_path{3} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyesFree']; % stack of .tif images
-%FigureName{3} = 'PhaseMapAverageWithEyesFree';
 
-%% Parameters
 BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
                 'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
                 'Mesencephalon - Oculomotor Nucleus nIII' ...
                 'Mesencephalon - Tegmentum' ...
                 'Mesencephalon - Tectum Stratum Periventriculare' ...
+                'Mesencephalon - Vglut2 cluster 1' ...
                 'Diencephalon - Habenula' ...
                 'Rhombencephalon - Cerebellum' ...
                 'Rhombencephalon - Inferior Olive' ...
@@ -36,17 +36,48 @@ BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
                 'Rhombencephalon - Rhombomere 4' ...
                 'Rhombencephalon - Rhombomere 5' ...
                 'Rhombencephalon - Rhombomere 6' ...
-                'Rhombencephalon - Rhombomere 7' ...
-                'Ganglia - Statoacoustic Ganglion'};
-ColorMap = lines(size(BrainRegions, 2));
-for i = 1:size(BrainRegions, 2)
-    BrainRegionsColors{i} = {ColorMap(i,:)};
-end
+                'Rhombencephalon - Rhombomere 7' };
 
-% brain_regions = {'Diencephalon -' 'Diencephalon - Habenula' 'Mesencephalon - Torus Longitudinalis' 'Rhombencephalon - Cerebellum' 'Rhombencephalon - Inferior Olive' ...
-%                 'Rhombencephalon - Oculomotor Nucleus nIV' 'Rhombencephalon - Spinal Backfill Vestibular Population' 'Rhombencephalon - Tangential Vestibular Nucleus' ...
-%                 'Rhombencephalon - Valvula Cerebelli' 'Ganglia - Eyes' 'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
-%                 'Mesencephalon - Oculomotor Nucleus nIII', 'Mesencephalon - Tectum Stratum Periventriculare', 'Mesencephalon - Tegmentum', 'Ganglia - Statoacoustic Ganglion'};
+ColorMap = lines(size(BrainRegions, 2)-7);
+BrainRegionsColors = cell(1,size(BrainRegions, 2));
+BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+for i = 1:size(BrainRegions, 2)
+    if i < (size(BrainRegions, 2)-7)
+    BrainRegionsColors{i} = {ColorMap(i,:)};
+    BrainRegionsLineStyle{i} = '-';
+    else
+        BrainRegionsColors{i} = {[0.99 0.99 0.99]};
+        BrainRegionsLineStyle{i} = ':';
+    end
+end
+%% Figure Phase Map Zproj Run7
+% SaveNameFigure = 'PhaseMapZprojRun7';
+% 
+% stack_path{1} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_magenta-green']; % stack of .tif images
+% FigureName{1} = 'Phase Map: 3Pi/4 and 7Pi/4 Phase cluster';
+% ExpSaturation{1} = 0.8;
+% 
+% stack_path{2} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_red-cyan']; % stack of .tif images
+% FigureName{2} = 'Phase Map: 0 and Pi Phase cluster';
+% ExpSaturation{2} = 0.8;
+%  
+% stack_path{3} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_yellow-blue']; % stack of .tif images
+% FigureName{3} = 'Phase Map: Pi/4 and 3Pi/4 Phase cluster';
+% ExpSaturation{3} = 0.8;
+% 
+% BrainRegions = {'Mesencephalon - Tegmentum' ...
+%                 'Mesencephalon - Tectum Stratum Periventriculare' ...
+%                 'Diencephalon - Habenula' ...
+%                 'Rhombencephalon - Cerebellum' ...
+%                 'Rhombencephalon - Inferior Olive' };
+% 
+% ColorMap = lines(size(BrainRegions, 2));
+% BrainRegionsColors = cell(1,size(BrainRegions, 2));
+% BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+% for i = 1:size(BrainRegions, 2)
+%     BrainRegionsColors{i} = {ColorMap(i,:)};
+%     BrainRegionsLineStyle{i} = '-';
+% end
 
 %% Subplot parameters
 SBLineNb = 1;
@@ -135,7 +166,7 @@ disp('Finish X-projection Brain Countours')
 clf
 %set(0,'DefaultFigureWindowStyle', 'normal');
 F1 = figure('Name', 'PhaseMapAverageZproj');
-F1.Position = [0,0,(1000*size(stack_path, 2)),1000];
+F1.Position = [0,0,(1000*size(stack_path, 2)),800];
 for Exp = 1:size(stack_path, 2)
     %% Add the brain regions selected
     %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
@@ -217,7 +248,7 @@ for Exp = 1:size(stack_path, 2)
             P = plot(C(:,2),C(:,1));
             P.Color = [BrainRegionsColors{br}{1}];
             P.LineWidth = 1;
-            P.LineStyle = '-';
+            P.LineStyle = BrainRegionsLineStyle{br};
         end
         clear C;
     end
@@ -264,16 +295,25 @@ for Exp = 1:size(stack_path, 2)
             P = plot(C(:,2),C(:,1));
             P.Color = [BrainRegionsColors{br}{1}];
             P.LineWidth = 1;
-            P.LineStyle = '-';
+            P.LineStyle = BrainRegionsLineStyle{br};
         end
         clear C;
     end
     clear C;
 end
+%% Plot Brain Region Name with Color Code
+for br = 1:size(BrainRegions, 2) 
+    T = text(0, 0+br, BrainRegions{br});
+    T.HorizontalAlignment = 'center';
+    T.Color = [BrainRegionsColors{br}{1}];
+    T.VerticalAlignment = 'top';
+    T.LineStyle = '-';
+end
+
 %% Save Figures
 % Local
-saveas(F1, [FigureOutPath, '/', 'PhaseMapAverageZproj', '.fig']);
-saveas(F1, [FigureOutPath, '/',  'PhaseMapAverageZproj', '.svg']);
+saveas(F1, [FigureOutPath, '/', SaveNameFigure, '.fig']);
+saveas(F1, [FigureOutPath, '/',  SaveNameFigure, '.svg']);
 % Nextcloud
-saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapAverageZproj', '.fig']);
-saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapAverageZproj'], 'svg');
+saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', SaveNameFigure, '.fig']);
+saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  SaveNameFigure], 'svg');
