@@ -130,14 +130,13 @@ end
         imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
     end
 %% Plot Layers of the Run7 with brain regions
-clf
 F2 = figure('Name', 'PhaseMapSingleFish');
-F2.Position = [0,0,600,1500];
+F2.Position = [0,0,2200+CT+CB,1500];
 It = 1;
-layerSelected = [8,23,30,35,40,47,63,66,78];
+layerSelected = [8,23,30,35,40,47,53,63,66,78];
 for layer = layerSelected
     disp(layer);
-    subplot(size(layerSelected, 2)/3, 3, It)
+    subplot(2, size(layerSelected, 2)/2, It)
     
     % Plot Grey Stack
     image(rescalegd2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-layer+1)-mean2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-69+1)*(1+layer/70))));
@@ -222,19 +221,33 @@ for layer = layerSelected
     ROIZoomStack{layer} = imgstack( (Positions{layer}(2):Positions{layer}(2)+Positions{layer}(4)) , (Positions{layer}(1):Positions{layer}(1)+Positions{layer}(3)) ,:,layer);
     ROIZoomGreyStack{layer} = imgGreyStackR7( (Positions{layer}(2):Positions{layer}(2)+Positions{layer}(4)) , (Positions{layer}(1):Positions{layer}(1)+Positions{layer}(3)) ,:,Zs-layer+1);
 end
+
+%% Z-Proj of the torus longitudinalis
+layerRect = 8; 
+ROIZoomStackTorusL = zeros(Positions{layerRect}(4)+1, Positions{layerRect}(3)+1, 3, 11, 'uint8');
+ROIZoomGreyStackTorusL = zeros(Positions{layerRect}(4)+1, Positions{layerRect}(3)+1, 3, 11, 'uint8');
+i = 1;
+for layer = [8-3:8+1]
+    ROIZoomStackTorusL(:,:,:,i) = imgstack( (Positions{layerRect}(2):Positions{layerRect}(2)+Positions{layerRect}(4)) , (Positions{layerRect}(1):Positions{layerRect}(1)+Positions{layerRect}(3)) ,:,layer);
+    ROIZoomGreyStackTorusL(:,:,:,i) = imgGreyStackR7( (Positions{layerRect}(2):Positions{layerRect}(2)+Positions{layerRect}(4)) , (Positions{layerRect}(1):Positions{layerRect}(1)+Positions{layerRect}(3)) ,:,Zs-layer+1);
+    i = i + 1;
+end
+ROIZoomStack{layerRect} = max(ROIZoomStackTorusL,[], 4);
+ROIZoomGreyStackTorusL = max(ROIZoomGreyStackTorusL,[], 4);
+
 %% Plot the ROI Zoom in of the Run7 with it gray stack
 F2 = figure('Name', 'PhaseMapSingleFishROI');
-F2.Position = [0,0,700,1500];   
+F2.Position = [0,0,2500,1500];   
 It = 1;
 for layer = layerSelected
     % Plot Grey Stack and Phase Map ROI
-    P = subplot(size(layerSelected,2)/3,3,It);
-    image(rescalegd2( ROIZoomGreyStack{layer} ));
+    P = subplot(2,size(layerSelected,2)/2,It);
+    image(rescalegd2( ROIZoomGreyStack{layer}));
     pbaspect([(size(ROIZoomGreyStack{layer}, 2)/size(ROIZoomGreyStack{layer}, 1)) 1 1]);
     axis off
     hold on;
     Im3 = image(ROIZoomStack{layer});
-    Im3.AlphaData = max(ROIZoomStack{layer}, [], 3)*1.3;
+    Im3.AlphaData = max(ROIZoomStack{layer}, [], 3)/0.4;
     axis off
     hold on;
     title(['Layer ', num2str(layer)]);
@@ -264,11 +277,11 @@ saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review
 
 %% Plot the ROI Rectangle on the figure "PhaseMapSingleFish"
 F2 = figure('Name', 'PhaseMapSingleFish');
-F2.Position = [0,0,500+CT+CB,1500];
+F2.Position = [0,0,2200+CT+CB,1500];
 It = 1;
 for layer = layerSelected
     disp(layer);
-    subplot(size(layerSelected, 2)/3, 3, It)
+    subplot(2, size(layerSelected, 2)/2, It)
     
     % Plot Grey Stack
     image(rescalegd2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-layer+1)-mean2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-69+1)*(1+layer/70))));
@@ -277,7 +290,7 @@ for layer = layerSelected
     % Plot Phase map
     Im3 = image(imgstack(CT:height-CB,CL:width-CR,:,layer));
     %Im3.AlphaData = max(imgstack(:,:,:,layer), [], 3)*1.3;
-    title(['Layer ', num2str(layer), '(-', num2str((layer-3)*2) , 'μm)']);
+    %title(['-', num2str((layer-3)*2) , 'μm']);
     axis off
     hold on;
     pbaspect([(size(imgGreyStackR7(CT:height-CB,CL:width-CR,:,layer), 2)/size(imgGreyStackR7(CT:height-CB,CL:width-CR,:,layer), 1)) 1 1]);
@@ -296,15 +309,24 @@ for layer = layerSelected
     
     % Plot Scale bar
     x = 540-(CL+CR);
-    y = 1360-(CB+CT);
+    y = 1380-(CB+CT);
     RatioPixMicron = 0.8;
     ScaleBar = 50; % Micron
     patch([x, x, (x+ScaleBar/RatioPixMicron), (x+ScaleBar/RatioPixMicron)], [y, y+15, y+15, y], 'w');
-    T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
-    T.HorizontalAlignment = 'center';
+%     T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
+%     T.HorizontalAlignment = 'center';
+%     T.Color = [0.99 0.99 0.99];
+%     T.VerticalAlignment = 'top';
+%     T.FontSize = 4;
+%     T.LineStyle = '-';
+    
+    % Plot Title
+    x = 30-CL;
+    y = CT-30;
+    T = text(x, y+10, ['-', num2str((layer-3)*2) , 'μm']);
+    T.FontWeight = 'bold';
     T.Color = [0.99 0.99 0.99];
-    T.VerticalAlignment = 'top';
-    T.FontSize = 4;
+    T.FontSize = 16;
     T.LineStyle = '-';
     
     % Plot Brain Countour
@@ -319,7 +341,7 @@ for layer = layerSelected
     % Plot Rectangle of the ROI
     if size(ROIZoomStack{layer}, 2) > 0
         disp('hello')
-        P = rectangle('Position',[Positions{layer}(1)-CL, Positions{layer}(2)-CT, Positions{layer}(3), Positions{layer}(4)])
+        P = rectangle('Position',[Positions{layer}(1)-CL, Positions{layer}(2)-CT, Positions{layer}(3), Positions{layer}(4)]);
         P.EdgeColor = [0.99 0.99 0.99];
         P.LineWidth = 0.5;
         P.LineStyle = '--';
