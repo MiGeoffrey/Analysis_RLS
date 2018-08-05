@@ -1,3 +1,4 @@
+
 %% Path
 MainPath = '/home/ljp/Science/Projects/';
 load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
@@ -12,16 +13,16 @@ CR = 5; % Crop Right
 CT = 60; % Crop Top  Must be > 0
 CB = 270; % Crop Bottom 
 
-%% Figure Phase Map Average Zpro
+%% Figure Phase Map Average Zpro (Figure_3E)
 % clear stack_path FigureName
 % SaveNameFigure = 'PhaseMapAverageZproj';
 % stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyes']; % stack of .tif images
-% FigureName{1} = 'Phase Map Average (n=6)';
-% ExpSaturation{1} = 1;
+% FigureName{1} = 'Phase Map Average (n=8)';
+% ExpSaturation{1} = 2.5;
 % 
 % stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
 % FigureName{2} = 'Phase Map Average Enucleated Larvae (n=9)';
-% ExpSaturation{2} = 2;
+% ExpSaturation{2} = 4;
 % 
 % BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
 %                 'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
@@ -54,27 +55,91 @@ CB = 270; % Crop Bottom
 %         BrainRegionsLineStyle{i} = ':';
 %     end
 % end
-%% Figure Phase Map Zproj Run7
+% Subplot parameters
+% SBLineNb = 1;
+% SBColumnNb = 3*size(stack_path, 2);
+
+%% Figure Phase Map Zproj Run7 (Figure_3A,B,C,D)
+% clear stack_path FigureName
+% SaveNameFigure = 'PhaseMapZprojRun7';
+% 
+% stack_path{3} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_magenta-green']; % stack of .tif images
+% FigureName{3} = 'Phase Map: Pi/2 to 3Pi/4 and 3Pi/2 to 7Pi/4 Phase cluster';
+% ExpSaturation{3} = 1.5;
+% 
+% stack_path{1} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_red-cyan']; % stack of .tif images
+% FigureName{1} = 'Phase Map: 0 to Pi/4 and Pi to 5Pi/4 Phase cluster';
+% ExpSaturation{1} = 1.5;
+%  
+% stack_path{4} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_redmag-cyangreen']; % stack of .tif images
+% FigureName{4} = 'Phase Map: 3Pi/4 to Pi and 7Pi/4 to 0 Phase cluster';
+% ExpSaturation{4} = 1.5;
+% 
+% stack_path{2} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_yellow-blue']; % stack of .tif images
+% FigureName{2} = 'Phase Map: Pi/4 to Pi and Pi/2 to 0 Phase cluster';
+% ExpSaturation{2} = 1.5;
+% 
+% BrainRegions = {'Mesencephalon - Tegmentum' ...
+%                 'Mesencephalon - Tectum Stratum Periventriculare' ...
+%                 'Diencephalon - Habenula' ...
+%                 'Rhombencephalon - Cerebellum' ...
+%                 'Rhombencephalon - Inferior Olive' };
+% 
+% ColorMap = lines(size(BrainRegions, 2));
+% BrainRegionsColors = cell(1,size(BrainRegions, 2));
+% BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+% for i = 1:size(BrainRegions, 2)
+%     BrainRegionsColors{i} = {ColorMap(i,:)};
+%     BrainRegionsLineStyle{i} = '-';
+% end
+% Subplot parameters
+% SBLineNb = 1;
+% SBColumnNb = 3*size(stack_path, 2);
+
+%% Figure Phase Map Zpro WithEyes (Figure_S3A)
 clear stack_path FigureName
-SaveNameFigure = 'PhaseMapZprojRun7';
+%%%%%%%%%%% Plot in two figure beacause of a bug when we save the figure in svg %%%%%%%%%%%
 
-stack_path{1} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_magenta-green']; % stack of .tif images
-FigureName{1} = 'Phase Map: 3Pi/4 and 7Pi/4 Phase cluster';
-ExpSaturation{1} = 0.8;
+SaveNameFigure = 'PhaseMapAverageZprojMoreRegions';
+stack_path{1} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{1} = 'Fish 1 (6dpf)';
+ExpSaturation{1} = 1;
 
-stack_path{2} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_red-cyan']; % stack of .tif images
-FigureName{2} = 'Phase Map: 0 and Pi Phase cluster';
-ExpSaturation{2} = 0.8;
- 
-stack_path{3} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_yellow-blue']; % stack of .tif images
-FigureName{3} = 'Phase Map: Pi/4 and 3Pi/4 Phase cluster';
-ExpSaturation{3} = 0.8;
+stack_path{2} = [MainPath, 'RLS/Data/2018-05-24/Run 12/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{2} = 'Fish 2 (6dpf)';
+ExpSaturation{2} = ExpSaturation{1};
 
-BrainRegions = {'Mesencephalon - Tegmentum' ...
-                'Mesencephalon - Tectum Stratum Periventriculare' ...
-                'Diencephalon - Habenula' ...
-                'Rhombencephalon - Cerebellum' ...
-                'Rhombencephalon - Inferior Olive' };
+stack_path{3} = [MainPath, 'RLS/Data/2018-05-24/Run 16/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{3} = 'Fish 3 (6dpf)';
+ExpSaturation{3} = ExpSaturation{1};
+
+stack_path{4} = [MainPath, 'RLS/Data/2018-05-24/Run 21/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{4} = 'Fish 4 (6dpf)';
+ExpSaturation{4} = ExpSaturation{1};
+
+% SaveNameFigure = 'PhaseMapAverageZprojMoreRegions_2';
+% stack_path{1} = [MainPath, 'RLS/Data/2018-05-24/Run 25/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{1} = 'Fish 5 (6dpf)';
+% ExpSaturation{1} = 1;
+% 
+% stack_path{2} = [MainPath, 'RLS/Data/2018-06-14/Run 15/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{2} = 'Fish 6 (6dpf)';
+% ExpSaturation{2} = ExpSaturation{1};
+% 
+% stack_path{3} = ['/media/RED/Science/Projects/RLS1P/Data/2018-05-25/Run 11/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{3} = 'Fish 7 (7dpf)';
+% ExpSaturation{3} = ExpSaturation{1};
+% 
+% stack_path{4} = ['/media/RED/Science/Projects/RLS1P/Data/2018-05-25/Run 15/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{4} = 'Fish 8 (7dpf)';
+% ExpSaturation{4} = ExpSaturation{1};
+
+BrainRegions = {'Diencephalon - Pretectum' ...
+                'Diencephalon - Ventral Thalamus' ...
+                'Telencephalon - Pallium' ...
+                'Telencephalon - Subpallium' ...
+                'Mesencephalon - Torus Semicircularis' ...
+                };
 
 ColorMap = lines(size(BrainRegions, 2));
 BrainRegionsColors = cell(1,size(BrainRegions, 2));
@@ -83,10 +148,100 @@ for i = 1:size(BrainRegions, 2)
     BrainRegionsColors{i} = {ColorMap(i,:)};
     BrainRegionsLineStyle{i} = '-';
 end
-
-%% Subplot parameters
+% Subplot parameters
 SBLineNb = 1;
 SBColumnNb = 3*size(stack_path, 2);
+
+%% Figure Phase Map Zpro WithoutEyes (Figure_S3B)
+clear stack_path FigureName
+%%%%%%%%%%% Plot in two figure beacause of a bug when we save the figure in svg %%%%%%%%%%%
+
+% SaveNameFigure = 'PhaseMapAverageZprojWithoutEyesMoreRegions';
+% stack_path{1} = ['/media/RED/Science/Projects/RLS1P/Data/2018-06-21/Run 28/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{1} = 'Fish 1 (6dpf)';
+% ExpSaturation{1} = 1.5;
+% 
+% stack_path{2} = ['/media/RED/Science/Projects/RLS1P/Data/2018-06-21/Run 24/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{2} = 'Fish 2 (6dpf)';
+% ExpSaturation{2} = ExpSaturation{1};
+% 
+% stack_path{3} = ['/media/RED/Science/Projects/RLS1P/Data/2018-06-21/Run 09/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{3} = 'Fish 3 (6dpf)';
+% ExpSaturation{3} = ExpSaturation{1};
+% 
+% stack_path{4} = ['/media/RED/Science/Projects/RLS1P/Data/2018-06-28/Run 16/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+% FigureName{4} = 'Fish 4 (6dpf)';
+% ExpSaturation{4} = ExpSaturation{1};
+
+SaveNameFigure = 'PhaseMapAverageZprojWithoutEyesMoreRegions_2';
+stack_path{1} = ['/media/RED/Science/Projects/RLS1P/Data/2018-06-28/Run 26/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{1} = 'Fish 5 (6dpf)';
+ExpSaturation{1} = 1.5;
+
+stack_path{2} = [MainPath, 'RLS/Data/2018-06-11/Run 04/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{2} = 'Fish 6 (5dpf)';
+ExpSaturation{2} = ExpSaturation{1};
+
+stack_path{3} = [MainPath, 'RLS/Data/2018-06-14/Run 12/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{3} = 'Fish 7 (6dpf)';
+ExpSaturation{3} = ExpSaturation{1};
+
+stack_path{4} = [MainPath, 'RLS/Data/2018-06-14/Run 08/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{4} = 'Fish 8 (6dpf)';
+ExpSaturation{4} = ExpSaturation{1};
+
+stack_path{5} = [MainPath, 'RLS/Data/2018-06-14/Run 03/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers/PhaseMap_rgb']; % stack of .tif images
+FigureName{5} = 'Fish 9 (6dpf)';
+ExpSaturation{5} = 2;
+
+
+BrainRegions = {'Diencephalon - Pretectum' ...
+                'Diencephalon - Ventral Thalamus' ...
+                'Telencephalon - Pallium' ...
+                'Telencephalon - Subpallium' ...
+                'Mesencephalon - Torus Semicircularis' ...
+                };
+
+ColorMap = lines(size(BrainRegions, 2));
+BrainRegionsColors = cell(1,size(BrainRegions, 2));
+BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+for i = 1:size(BrainRegions, 2)
+    BrainRegionsColors{i} = {ColorMap(i,:)};
+    BrainRegionsLineStyle{i} = '-';
+end
+% Subplot parameters
+SBLineNb = 1;
+SBColumnNb = 3*size(stack_path, 2);
+
+%% Figure Phase Map Zpro WithEyes (Figure_S2)
+clear stack_path FigureName
+%%%%%%%%%%% Plot in two figure beacause of a bug when we save the figure in svg %%%%%%%%%%%
+
+SaveNameFigure = 'PhaseMapAverageZprojCytoplasmic';
+stack_path{1} = ['/media/RED/Science/Projects/RLS1P/Data/AveragedPhaseMaps/stack']; % stack of .tif images
+FigureName{1} = 'PhaseMapAverageZprojCytoplasmic';
+ExpSaturation{1} = 0.9;
+
+BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
+                'Mesencephalon - Tegmentum' ...
+                'Mesencephalon - Tectum Stratum Periventriculare' ...
+                'Diencephalon - Habenula' ...
+                'Rhombencephalon - Cerebellum' ...
+                'Rhombencephalon - Inferior Olive' ...
+                };
+
+ColorMap = lines(size(BrainRegions, 2));
+BrainRegionsColors = cell(1,size(BrainRegions, 2));
+BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+for i = 1:size(BrainRegions, 2)
+    BrainRegionsColors{i} = {ColorMap(i,:)};
+    BrainRegionsLineStyle{i} = '-';
+end
+% Subplot parameters
+SBLineNb = 1;
+SBColumnNb = 3*size(stack_path, 2);
+
+
 %% Countours of the brain regions
 %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
 CountourBrainRegions = cell(1,size(BrainRegions, 2));
@@ -94,6 +249,8 @@ CountourBrainRegionsX = cell(1,size(BrainRegions, 2));
 BrainRegionStack = zeros(height, width, 3, Zs);
 CountourBrainRegionsStack = cell(size(BrainRegions, 2),Zs);
 for br = 1:size(BrainRegions, 2)
+    clc;
+    disp(['Brain regions: ', num2str(br), '/', num2str(size(BrainRegions, 2))]);
     img_br = zeros(height, width);
     img_brX = zeros(height, Zs);
     for layer = 1:Zs
@@ -134,7 +291,7 @@ BrainCountourRegions = {'Diencephalon -' 'Rhombencephalon -' 'Mesencephalon -' '
 img_br = zeros(height, width);
 for layer = 1:Zs
     clc
-    disp(layer);
+    disp(['Layer: ', num2str(layer), '/', num2str(Zs) ]);
     img_br_tmp = zeros(height, width);
     for br = 1:size(BrainCountourRegions, 2)
         brain_region = find(ismember(MaskDatabaseNames,BrainCountourRegions{br}));
@@ -171,7 +328,7 @@ disp('Finish X-projection Brain Countours')
 clf
 %set(0,'DefaultFigureWindowStyle', 'normal');
 F1 = figure('Name', 'PhaseMapAverageZproj');
-F1.Position = [0,0,(1000*size(stack_path, 2))+(CT+CB),800];
+F1.Position = [0,0,(1000*size(stack_path, 2))+(CT+CB),1800/size(stack_path, 2)];
 for Exp = 1:size(stack_path, 2)
     %% Add the brain regions selected
     %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
@@ -240,11 +397,11 @@ for Exp = 1:size(stack_path, 2)
     RatioPixMicron = 0.8;
     ScaleBar = 50; % Micron
     patch([x, x, (x+ScaleBar/RatioPixMicron), (x+ScaleBar/RatioPixMicron)], [y, y+10, y+10, y], 'w');
-    T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
-    T.HorizontalAlignment = 'center';
-    T.Color = [0.99 0.99 0.99];
-    T.VerticalAlignment = 'top';
-    T.LineStyle = '-';
+%     T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
+%     T.HorizontalAlignment = 'center';
+%     T.Color = [0.99 0.99 0.99];
+%     T.VerticalAlignment = 'top';
+%     T.LineStyle = '-';
     
     % Plot Brain Regions Countours
     for br = 1:size(BrainRegions, 2)
@@ -287,11 +444,11 @@ for Exp = 1:size(stack_path, 2)
     RatioPixMicron = 1;
     ScaleBar = 50; % Micron
     patch([x, x, (x+ScaleBar/RatioPixMicron), (x+ScaleBar/RatioPixMicron)], [y, y+10, y+10, y], 'w');
-    T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
-    T.HorizontalAlignment = 'center';
-    T.Color = [0.99 0.99 0.99];
-    T.VerticalAlignment = 'top';
-    T.LineStyle = '-';
+%     T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
+%     T.HorizontalAlignment = 'center';
+%     T.Color = [0.99 0.99 0.99];
+%     T.VerticalAlignment = 'top';
+%     T.LineStyle = '-';
     
     % Plot Brain Regions Countours
     for br = 1:size(BrainRegions, 2)
@@ -321,5 +478,6 @@ end
 saveas(F1, [FigureOutPath, '/', SaveNameFigure, '.fig']);
 saveas(F1, [FigureOutPath, '/',  SaveNameFigure, '.svg']);
 % Nextcloud
-saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', SaveNameFigure, '.fig']);
-saveas(F1, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  SaveNameFigure], 'svg');
+saveas(F1, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiologyReviewed/Figure_S2/Raw', '/', SaveNameFigure, '.fig']);
+saveas(F1, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiologyReviewed/Figure_S2/Raw', '/',  SaveNameFigure], 'svg');
+%%
