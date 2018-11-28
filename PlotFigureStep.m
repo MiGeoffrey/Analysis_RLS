@@ -13,17 +13,50 @@ CT = 60; % Crop Top  Must be > 0
 CB = 270; % Crop Bottom 
 
 %% Figure Phase Map Average Zpro
+clear stack_path FigureName
+SaveNameFigure = 'Figure_5_DecayTimeCorrected3.5';
+stack_path{1,1} = ['/home/ljp/Science/Projects/RLS/Data/AveragedPhaseMaps/stack_Step_Figure_5/5Erf_dv.png']; % stack of .tif images
+stack_path{1,2} = ['/home/ljp/Science/Projects/RLS/Data/AveragedPhaseMaps/stack_Step_Figure_5/5Erf_lr.png'];
+FigureName{1} = '5Erf';
+ExpSaturation{1} = 1;
+
+stack_path{2,1} = ['/home/ljp/Science/Projects/RLS/Data/AveragedPhaseMaps/stack_Step_Figure_5/5Grf_dv.png']; % stack of .tif images
+stack_path{2,2} = ['/home/ljp/Science/Projects/RLS/Data/AveragedPhaseMaps/stack_Step_Figure_5/5Grf_lr.png']; % stack of .tif images
+FigureName{2} = '5Grf';
+ExpSaturation{2} = 1;
+
+stack_path{3,1} = ['/home/ljp/Science/Projects/RLS/Data/AveragedPhaseMaps/stack_Step_Figure_5/5Hrf_noeyes_dv.png']; % stack of .tif images
+stack_path{3,2} = ['/home/ljp/Science/Projects/RLS/Data/AveragedPhaseMaps/stack_Step_Figure_5/5Hrf_noeyes_lr.png']; % stack of .tif images
+FigureName{3} = '5Hrf';
+ExpSaturation{2} = 1;
+
+BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
+                'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
+                'Mesencephalon - Oculomotor Nucleus nIII' ...
+                'Mesencephalon - Tegmentum' ...
+                'Mesencephalon - Tectum Stratum Periventriculare' ...
+                'Diencephalon - Habenula' ...
+                'Rhombencephalon - Cerebellum' ...
+                'Rhombencephalon - Inferior Olive' ...
+                'Rhombencephalon - Oculomotor Nucleus nIV' };
+
+ColorMap = lines(size(BrainRegions, 2));
+BrainRegionsColors = cell(1,size(BrainRegions, 2));
+BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+for i = 1:size(BrainRegions, 2)
+    BrainRegionsColors{i} = {ColorMap(i,:)};
+    BrainRegionsLineStyle{i} = '-';
+end
+
+%% Figure Phase Map Average Zpro
 % clear stack_path FigureName
-% SaveNameFigure = 'Step_BrainCountours';
-% stack_path{1,1} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/example_xy_raw.tiff']; % stack of .tif images
-% stack_path{1,2} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/example_yz_raw.tiff'];
+% SaveNameFigure = 'Step_BrainCountours_WithoutEyes';
+% stack_path{1,1} = ['/home/ljp/Science/Projects/RLS/Data/2017-02-08/Run 08/Analysis/StepROIRun08.tif']; % stack of .tif images
+% stack_path{1,2} = ['/home/ljp/Science/Projects/RLS/Data/2017-02-08/Run 08/Analysis/StepROIRun08.tif'];
+% %stack_path{1,1} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/average_withouteyes_xy_raw.tiff']; % stack of .tif images
+% %stack_path{1,2} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/average_withouteyes_yz_raw.tiff'];
 % FigureName{1} = 'Run 08 (24-05-2018)';
 % ExpSaturation{1} = 1;
-% 
-% stack_path{2,1} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/average_witheyes_xy_raw.tiff']; % stack of .tif images
-% stack_path{2,2} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/average_witheyes_yz_raw.tiff']; % stack of .tif images
-% FigureName{2} = 'Average';
-% ExpSaturation{2} = 1;
 % 
 % BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
 %                 'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
@@ -56,82 +89,6 @@ CB = 270; % Crop Bottom
 %         BrainRegionsLineStyle{i} = ':';
 %     end
 % end
-
-%% Figure Phase Map Average Zpro
-clear stack_path FigureName
-SaveNameFigure = 'Step_BrainCountours_WithoutEyes';
-stack_path{1,1} = ['/home/ljp/Science/Projects/RLS/Data/2017-02-08/Run 08/Analysis/StepROIRun08.tif']; % stack of .tif images
-stack_path{1,2} = ['/home/ljp/Science/Projects/RLS/Data/2017-02-08/Run 08/Analysis/StepROIRun08.tif'];
-%stack_path{1,1} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/average_withouteyes_xy_raw.tiff']; % stack of .tif images
-%stack_path{1,2} = ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_5_CB/Review/average_withouteyes_yz_raw.tiff'];
-FigureName{1} = 'Run 08 (24-05-2018)';
-ExpSaturation{1} = 1;
-
-BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
-                'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
-                'Mesencephalon - Oculomotor Nucleus nIII' ...
-                'Mesencephalon - Tegmentum' ...
-                'Mesencephalon - Tectum Stratum Periventriculare' ...
-                'Diencephalon - Habenula' ...
-                'Rhombencephalon - Cerebellum' ...
-                'Rhombencephalon - Inferior Olive' ...
-                'Rhombencephalon - Oculomotor Nucleus nIV' ...
-                'Rhombencephalon - Spinal Backfill Vestibular Population' ...
-                'Rhombencephalon - Tangential Vestibular Nucleus' ...
-                'Rhombencephalon - Rhombomere 1' ...
-                'Rhombencephalon - Rhombomere 2' ...
-                'Rhombencephalon - Rhombomere 3' ...
-                'Rhombencephalon - Rhombomere 4' ...
-                'Rhombencephalon - Rhombomere 5' ...
-                'Rhombencephalon - Rhombomere 6' ...
-                'Rhombencephalon - Rhombomere 7' };
-
-ColorMap = lines(size(BrainRegions, 2)-7);
-BrainRegionsColors = cell(1,size(BrainRegions, 2));
-BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
-for i = 1:size(BrainRegions, 2)
-    if i <= (size(BrainRegions, 2)-7)
-    BrainRegionsColors{i} = {ColorMap(i,:)};
-    BrainRegionsLineStyle{i} = '-';
-    else
-        BrainRegionsColors{i} = {[0.99 0.99 0.99]};
-        BrainRegionsLineStyle{i} = ':';
-    end
-end
-%% Figure Phase Map Zproj Run7
-% clear stack_path FigureName
-% SaveNameFigure = 'PhaseMapZprojRun7';
-% 
-% stack_path{3} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_magenta-green']; % stack of .tif images
-% FigureName{3} = 'Phase Map: Pi/2 to 3Pi/4 and 3Pi/2 to 7Pi/4 Phase cluster';
-% ExpSaturation{3} = 1.5;
-% 
-% stack_path{1} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_red-cyan']; % stack of .tif images
-% FigureName{1} = 'Phase Map: 0 to Pi/4 and Pi to 5Pi/4 Phase cluster';
-% ExpSaturation{1} = 1.5;
-%  
-% stack_path{4} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_redmag-cyangreen']; % stack of .tif images
-% FigureName{4} = 'Phase Map: 3Pi/4 to Pi and 7Pi/4 to 0 Phase cluster';
-% ExpSaturation{4} = 1.5;
-% 
-% stack_path{2} = [MainPath, 'RLS/Data/2018-05-24/Run 07/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_RGB_yellow-blue']; % stack of .tif images
-% FigureName{2} = 'Phase Map: Pi/4 to Pi and Pi/2 to 0 Phase cluster';
-% ExpSaturation{2} = 1.5;
-% 
-% BrainRegions = {'Mesencephalon - Tegmentum' ...
-%                 'Mesencephalon - Tectum Stratum Periventriculare' ...
-%                 'Diencephalon - Habenula' ...
-%                 'Rhombencephalon - Cerebellum' ...
-%                 'Rhombencephalon - Inferior Olive' };
-% 
-% ColorMap = lines(size(BrainRegions, 2));
-% BrainRegionsColors = cell(1,size(BrainRegions, 2));
-% BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
-% for i = 1:size(BrainRegions, 2)
-%     BrainRegionsColors{i} = {ColorMap(i,:)};
-%     BrainRegionsLineStyle{i} = '-';
-% end
-
 %% Subplot parameters
 SBLineNb = 1;
 SBColumnNb = 3*size(stack_path, 1);
@@ -313,12 +270,13 @@ for Exp = 1:size(stack_path, 1)
     %%%%%%%%%%% WARNING: format paper? %%%%%%%%%%%
     subplot(SBLineNb,SBColumnNb,1+3*(Exp-1));
     imgXProj = imread(stack_path{Exp,2});
-    imgXProj = (imgXProj(:,:,1:3));
-    im2 = image(imrotate(imgXProj(:,CT:height-CB,:), -90));
+    imgXProj = (imrotate((imgXProj(:,:,1:3)),  90));
+    im2 = image(imrotate((imgXProj(:,CT:height-CB,:)), -90));
     %im2.AlphaData = max(imrotate(imgXProj, -90), [], 3)*1.3;
     axis off;
     hold on;
     pbaspect([((size(imgXProj(:,CT:height-CB,:), 1)*(1/0.8))/size(imgXProj(:,CT:height-CB, :), 2)) 1 1]);
+    %pbaspect([((size(imgXProj(:,CT:height-CB,:), 1))/size(imgXProj(:,CT:height-CB, :), 2)) 1 1]);
     
     % Plot Brain Countour
     C = [CountourBrainX{1, 1}];
@@ -368,6 +326,6 @@ end
 saveas(F1, [FigureOutPath, '/', SaveNameFigure, '.fig']);
 saveas(F1, [FigureOutPath, '/',  SaveNameFigure, '.svg']);
 % Nextcloud
-saveas(F1, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_5_CB/Review', '/', SaveNameFigure, '.fig']);
-saveas(F1, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_5_CB/Review', '/',  SaveNameFigure], 'svg');
+saveas(F1, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology_Revision/Figure_5/raw', '/', SaveNameFigure, '.fig']);
+saveas(F1, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology_Revision/Figure_5/raw', '/',  SaveNameFigure, '.svg']);
 %%

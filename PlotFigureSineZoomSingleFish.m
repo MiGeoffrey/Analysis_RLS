@@ -103,7 +103,7 @@ for layer = 1:Zs
         MaskDatabaseNames(brain_region);
         img_brain_region = MaskDatabase(height*width*(layer-1)+1:height*width*(layer),brain_region);
         img_brain_region = reshape(img_brain_region, [height, width]);
-        img_brain_region = full(img_brain_region);
+        img_brain_region = full(img_brain_region);8,23,30,35,40,47,53,63,66,78
         img_br_tmp(img_brain_region == 1) = 1;
         img_br(img_brain_region == 1) = 1;
     end
