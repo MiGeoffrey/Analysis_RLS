@@ -1,8 +1,7 @@
-function [Tracking_int] = tracking_interpolate(Time, F)
+function [Tracking_int] = tracking_interpolate(Time, Path)
 
 %% =========== Load tracking signal
-file = dir([F.Data,'*Tracking.dat']);
-fileID = fopen([F.Data file.name]);
+fileID = fopen(Path);
 Data = fread(fileID,[ 2, Inf ],'single=>single','ieee-le');
 fclose(fileID);
 
@@ -13,4 +12,4 @@ TimeOffset = TimeTracking(1);
 TimeTracking = TimeTracking - TimeOffset;
 
 %% =========== Out put
-Tracking_int = interp1(TimeTracking(1:end),Tracking(1:end),Time); % interpolate tracking signal at time points where images were acquired
+Tracking_int = interp1(TimeTracking(1:3000),Tracking(1:3000),Time); % interpolate tracking signal at time points where images were acquired

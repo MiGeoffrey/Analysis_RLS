@@ -16,7 +16,7 @@ end
 suffin = '.tif';
 
 dmask = 50;                 % Parameters for the brain mask
-sizeRange = [10 150];        % Size filter (pixels)
+sizeRange = [0 1000];        % Size filter (pixels)
 thCorr = 0.05;              % Correlation filter
 
 % =========================================================================
@@ -168,7 +168,7 @@ for layer = Layers
     %figure(1);plot(round(pos(:,1)), round(pos(:,2)),'r*');
     
     
-    [idx, idx_] = select_neurons_manually(pos, R);
+%    [idx, idx_] = select_neurons_manually(pos, R);
     
     
     % --- Display -------------------------------------------------------------

@@ -1,8 +1,8 @@
-function [Tracking_sig, Tracking_time] = tracking_signal(F)
+function [Tracking_sig, Tracking_time] = tracking_signal(Path)
 
 %% =========== Load tracking signal
-file = dir([F.Data,'*Tracking.dat']);
-fileID = fopen([F.Data file.name]);
+%file = dir([Path,'*Tracking.dat']);
+fileID = fopen(Path);
 Data = fread(fileID,[ 2, Inf ],'single=>single','ieee-le');
 fclose(fileID);
 
