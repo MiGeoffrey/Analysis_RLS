@@ -1,7 +1,7 @@
-function [Motor_int] = motor_interpolate(Time, F)
+function [Motor_int] = motor_interpolate(Time, Path)
 
 %% =========== Load motor signal
-filename = [F.Data,'Stimulus.txt']; % data path and name of where the motor movement is saved
+filename = [Path,'Stimulus.txt']; % data path and name of where the motor movement is saved
 delimiter = '\t';                    
 formatSpec = '%f%f%f%[^\n\r]';      % formate of the text file
 fileID = fopen(filename,'r');       % open text file

@@ -12,6 +12,7 @@ CR = 5; % Crop Right
 CT = 60; % Crop Top  Must be > 0
 CB = 270; % Crop Bottom 
 %% Parameters
+ExpSaturation = 2;
 BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
                 'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
                 'Mesencephalon - Oculomotor Nucleus nIII' ...
@@ -102,7 +103,7 @@ for layer = 1:Zs
         MaskDatabaseNames(brain_region);
         img_brain_region = MaskDatabase(height*width*(layer-1)+1:height*width*(layer),brain_region);
         img_brain_region = reshape(img_brain_region, [height, width]);
-        img_brain_region = full(img_brain_region);
+        img_brain_region = full(img_brain_region);8,23,30,35,40,47,53,63,66,78
         img_br_tmp(img_brain_region == 1) = 1;
         img_br(img_brain_region == 1) = 1;
     end
@@ -192,8 +193,8 @@ end
 saveas(F2, [FigureOutPath, '/', 'PhaseMapSingleFish', '.fig']);
 saveas(F2, [FigureOutPath, '/',  'PhaseMapSingleFish', '.svg']);
 % Nextcloud
-saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFish', '.fig']);
-saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFish'], 'svg');
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFish', '.fig']);
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFish'], 'svg');
 
 %% Select the ROI Zoom in of the Run7 with it gray stack
 RectCorner = [100, 400, 300, 300];
@@ -227,7 +228,7 @@ layerRect = 8;
 ROIZoomStackTorusL = zeros(Positions{layerRect}(4)+1, Positions{layerRect}(3)+1, 3, 11, 'uint8');
 ROIZoomGreyStackTorusL = zeros(Positions{layerRect}(4)+1, Positions{layerRect}(3)+1, 3, 11, 'uint8');
 i = 1;
-for layer = [8-3:8+1]
+for layer = [8-5:8+5]
     ROIZoomStackTorusL(:,:,:,i) = imgstack( (Positions{layerRect}(2):Positions{layerRect}(2)+Positions{layerRect}(4)) , (Positions{layerRect}(1):Positions{layerRect}(1)+Positions{layerRect}(3)) ,:,layer);
     ROIZoomGreyStackTorusL(:,:,:,i) = imgGreyStackR7( (Positions{layerRect}(2):Positions{layerRect}(2)+Positions{layerRect}(4)) , (Positions{layerRect}(1):Positions{layerRect}(1)+Positions{layerRect}(3)) ,:,Zs-layer+1);
     i = i + 1;
@@ -246,8 +247,8 @@ for layer = layerSelected
     pbaspect([(size(ROIZoomGreyStack{layer}, 2)/size(ROIZoomGreyStack{layer}, 1)) 1 1]);
     axis off
     hold on;
-    Im3 = image(ROIZoomStack{layer});
-    Im3.AlphaData = max(ROIZoomStack{layer}, [], 3)/0.4;
+    Im3 = image(ROIZoomStack{layer}*ExpSaturation);
+    Im3.AlphaData = max(ROIZoomStack{layer}, [], 3)/0.25;
     axis off
     hold on;
     title(['Layer ', num2str(layer)]);
@@ -271,9 +272,9 @@ end
 % Local
 saveas(F2, [FigureOutPath, '/', 'PhaseMapSingleFishROI', '.fig']);
 saveas(F2, [FigureOutPath, '/',  'PhaseMapSingleFishROI', '.svg']);
-% Nextcloud
-saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFishROI', '.fig']);
-saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFishROI'], 'svg');
+% 
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFishROI', '.fig']);
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFishROI'], 'svg');
 
 %% Plot the ROI Rectangle on the figure "PhaseMapSingleFish"
 F2 = figure('Name', 'PhaseMapSingleFish');
@@ -288,7 +289,7 @@ for layer = layerSelected
     %hold on;
     
     % Plot Phase map
-    Im3 = image(imgstack(CT:height-CB,CL:width-CR,:,layer));
+    Im3 = image(imgstack(CT:height-CB,CL:width-CR,:,layer)*ExpSaturation);
     %Im3.AlphaData = max(imgstack(:,:,:,layer), [], 3)*1.3;
     %title(['-', num2str((layer-3)*2) , 'μm']);
     axis off
@@ -353,7 +354,7 @@ end
 saveas(F2, [FigureOutPath, '/', 'PhaseMapSingleFishRectROI', '.fig']);
 saveas(F2, [FigureOutPath, '/',  'PhaseMapSingleFishRectROI', '.svg']);
 % Nextcloud
-saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFishRectROI', '.fig']);
-saveas(F2, ['/home/ljp/Nextcloud/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFishRectROI'], 'svg');
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFishRectROI', '.fig']);
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFishRectROI'], 'svg');
 
 
