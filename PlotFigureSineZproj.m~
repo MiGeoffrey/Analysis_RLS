@@ -371,7 +371,7 @@ SaveNameFigure = 'Figure_MultiSensory_Vest_Visual';
 
 %%%%% PhaseMap_1
 stack_path{1} = ['/home/ljp/Science/Projects/RLS/Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/PhaseMap1_PhaseMap3']; % stack of .tif images
-ExpSaturation{1} = 1;
+ExpSaturation{1} = 0.7;
 FigureName{1} = '2019-05-17/Run 01: Vestibular';
 
 BrainRegions = {'Mesencephalon - Tegmentum' ...
@@ -391,7 +391,6 @@ BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
 for i = 1:size(BrainRegions, 2)
     BrainRegionsColors{i} = {ColorMap(i,:)};
     BrainRegionsLineStyle{i} = '-';
-    BrainRegionsLineWidth{i} = 2;
 end
 %Subplot parameters
 SBLineNb = 1;
@@ -507,7 +506,7 @@ for Exp = 1:size(stack_path, 2)
      
  %%%%%% Correction to plot the PhaseMap recorded in 2P-mode on RLS2P %%%%%%%%%%%%%%%%%%%%%%%%
                 %file = dir([stack_path{Exp}, '/layer', '*.tif']);
-                img = imread([stack_path{Exp}, '/Layer', num2str(layer, '%03d') '.tif']) ;
+                img = imread([stack_path{Exp}, '/layer', num2str(layer) '.tif']) ;
                % img = imtranslate(img, [-20 20]);%  [ rechts oben ]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
@@ -571,7 +570,7 @@ for Exp = 1:size(stack_path, 2)
             C = [CountourBrainRegions{1,br}{i,1}];
             P = plot(C(:,2)-CL,C(:,1)-CT)
             P.Color = [BrainRegionsColors{br}{1}];
-            P.LineWidth = BrainRegionsLineWidth{br};
+            P.LineWidth = 1;
             P.LineStyle = BrainRegionsLineStyle{br};
         end
         clear C;
@@ -618,7 +617,7 @@ for Exp = 1:size(stack_path, 2)
             C = [CountourBrainRegionsX{1,br}{i,1}];
             P = plot(C(:,2)-CL,C(:,1)-CT);
             P.Color = [BrainRegionsColors{br}{1}];
-            P.LineWidth = BrainRegionsLineWidth{br};
+            P.LineWidth = 1;
             P.LineStyle = BrainRegionsLineStyle{br};
         end
         clear C;

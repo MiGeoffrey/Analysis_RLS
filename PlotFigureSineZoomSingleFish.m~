@@ -3,7 +3,7 @@ MainPath = '/home/ljp/Science/Projects/';
 load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
 grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_198layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
 out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
-FigureOutPath = [MainPath, 'RLS/Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/'];
+FigureOutPath = [MainPath, 'RLS/Data/AveragedPhaseMaps/Figure3Sine/'];
 mkdir(FigureOutPath);
 
 %% Crop images
@@ -110,7 +110,7 @@ CountourBrain = bwboundaries(img_br);
 disp('Finish Brain Countours')
 
 %% Phase Map Run 07
-PathPhaseMapRun07 = [MainPath, 'RLS/', 'Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/BinaryValueVest'];
+PathPhaseMapRun07 = [MainPath, 'RLS/', 'Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/PhaseMap1_PhaseMap3'];
 PathGreyStackRun07 = [MainPath, 'RLS/', 'Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/AFFINE_graystack_ON_zBrain_Elavl3-H2BRFP_198layers.nrrd']; 
 %% Load the grey stack of the Run 7
 imgGreyStacktmp = flip(uint16(nrrdread(PathGreyStackRun07)),1);
@@ -122,7 +122,7 @@ end
     imgstack = uint8(zeros(height, width,3, Zs));
     for layer = 1:Zs
         disp(layer)
-        img = imread([PathPhaseMapRun07, '/layer', num2str(layer, '%03d'), '.tif']);
+        img = imread([PathPhaseMapRun07, '/Layer', num2str(layer, '%03d'), '.tif']);
         imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
     end
 %% Plot Layers of the Run7 with brain regions
@@ -164,11 +164,11 @@ for layer = layerSelected
     RatioPixMicron = 0.8;
     ScaleBar = 50; % Micron
     patch([x, x, (x+ScaleBar/RatioPixMicron), (x+ScaleBar/RatioPixMicron)], [y, y+15, y+15, y], 'w');
-    T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+15, [num2str(ScaleBar), ' μm']);
+    T = text((x+(x+ScaleBar/RatioPixMicron))/2, y+10, [num2str(ScaleBar), ' μm']);
     T.HorizontalAlignment = 'center';
     T.Color = [0.99 0.99 0.99];
     T.VerticalAlignment = 'top';
-    T.FontSize = 8;
+    T.FontSize = 10;
     T.LineStyle = '-';
     
     % Plot Brain Countour
@@ -185,11 +185,11 @@ end
 
 %% Save Figures
 % Local
-saveas(F2, [FigureOutPath, '/', 'BinaryValueVest', '.fig']);
-saveas(F2, [FigureOutPath, '/',  'BinaryValueVest', '.svg']);
-% % Nextcloud
-% saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFish', '.fig']);
-% saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFish'], 'svg');
+saveas(F2, [FigureOutPath, '/', 'PhaseMapSingleFish', '.fig']);
+saveas(F2, [FigureOutPath, '/',  'PhaseMapSingleFish', '.svg']);
+% Nextcloud
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/', 'PhaseMapSingleFish', '.fig']);
+saveas(F2, ['/home/ljp/Nextcloud/ForGeoffrey/Manuscript/Migault et al/CurrentBiology/Figure_3_CB/Review', '/',  'PhaseMapSingleFish'], 'svg');
 
 %% Select the ROI Zoom in of the Run7 with it gray stack
 RectCorner = [100, 400, 300, 300];
