@@ -1,21 +1,18 @@
 
 %% Path
-MainPath = '/home/ljp/Science/Projects/';
-load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
-grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_178layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
-out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
-FigureOutPath = ['/home/ljp/SSD/RLS/Data/2019-05-17/'];
-mkdir(FigureOutPath);
+% MainPath = '/home/ljp/Science/Projects/';
+% load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
+% grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_178layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
+% out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
+% FigureOutPath = ['/home/ljp/SSD/RLS/Data/2019-05-17/'];
+% mkdir(FigureOutPath);
 
-
-%% Path Brighton
-MainPath = '/home/ljp/Science/Projects/';
+%% Path Mac
+MainPath = '/Users/Projects/';
 load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
 grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_198layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
-
-MainPath = '/media/Dream/home/ljp/SSD/';
-out_path = [MainPath, 'Data/AveragedPhaseMaps/stack_brain_region'];
-FigureOutPath = [MainPath, 'Data/AveragedPhaseMaps/Figure3Sine/'];
+out_path = ['/Users/migault/PhD/Presentations/2019/Toscany/'];
+FigureOutPath = ['/Users/migault/PhD/Presentations/2019/Toscany/PhaseMapPaper/'];
 mkdir(FigureOutPath);
 
 %% Crop images
@@ -369,10 +366,18 @@ CB = 270; % Crop Bottom
 clear stack_path FigureName
 SaveNameFigure = 'Figure_MultiSensory_Vest_Visual';
 
-%%%%% PhaseMap_1
-stack_path{1} = ['/home/ljp/Science/Projects/RLS/Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/PhaseMap1_PhaseMap3']; % stack of .tif images
+clear stack_path FigureName
+stack_path{1} = ['/Users/migault/PhD/Presentations/2019/Toscany/wrap_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_Value']; % stack of .tif images
+FigureName{1} = 'Response Map';
 ExpSaturation{1} = 1;
-FigureName{1} = '2019-05-17/Run 01: Vestibular';
+
+stack_path{2} = ['/Users/migault/PhD/Presentations/2019/Toscany/wrap_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_Left']; % stack of .tif images
+FigureName{2} = 'Phase Map Left';
+ExpSaturation{2} = ExpSaturation{1};
+ 
+stack_path{3} = ['/Users/migault/PhD/Presentations/2019/Toscany/wrap_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_Right']; % stack of .tif images
+FigureName{3} = 'Phase Map Right';
+ExpSaturation{3} = ExpSaturation{1};
 
 BrainRegions = {'Mesencephalon - Tegmentum' ...
                 'Mesencephalon - Tectum Stratum Periventriculare' ...
@@ -507,7 +512,8 @@ for Exp = 1:size(stack_path, 2)
      
  %%%%%% Correction to plot the PhaseMap recorded in 2P-mode on RLS2P %%%%%%%%%%%%%%%%%%%%%%%%
                 %file = dir([stack_path{Exp}, '/layer', '*.tif']);
-                img = imread([stack_path{Exp}, '/Layer', num2str(layer, '%03d') '.tif']) ;
+                img = imread([stack_path{Exp}, '/Layer', num2str(layer, '%02d') '.tif']) ;
+                img = cat(3, sum(img, 3), sum(img, 3), sum(img, 3));
                % img = imtranslate(img, [-20 20]);%  [ rechts oben ]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
@@ -546,12 +552,12 @@ for Exp = 1:size(stack_path, 2)
     pbaspect([(size(imgZProj(CT:height-CB,CL:width-CR,:), 2)/size(imgZProj(CT:height-CB,CL:width-CR,:), 1)) 1 1]);
     
     % Plot Brain Countour
-    C = [CountourBrain{1, 1}];
-    B = plot(C(:,2)-CL,C(:,1)-CT)
-    B.Color = [0.99 0.99 0.99];
-    B.LineWidth = 2;
-    B.LineStyle = '-';
-    clear C;
+%     C = [CountourBrain{1, 1}];
+%     B = plot(C(:,2)-CL,C(:,1)-CT)
+%     B.Color = [0.99 0.99 0.99];
+%     B.LineWidth = 2;
+%     B.LineStyle = '-';
+%     clear C;
     
     % Plot Scale bar
     x = 540-(CL+CR);
@@ -593,12 +599,12 @@ for Exp = 1:size(stack_path, 2)
     pbaspect([(size(imgXProj(:,CT:height-CB,:), 1)*(1/0.8)/size(imgXProj(:,CT:height-CB,:), 2)) 1 1]);
     
     % Plot Brain Countour
-    C = [CountourBrainX{1, 1}];
-    B = plot(C(:,2)-CL,C(:,1)-CT)
-    B.Color = [0.99 0.99 0.99];
-    B.LineWidth = 2;
-    B.LineStyle = '-';
-    clear C;
+%     C = [CountourBrainX{1, 1}];
+%     B = plot(C(:,2)-CL,C(:,1)-CT)
+%     B.Color = [0.99 0.99 0.99];
+%     B.LineWidth = 2;
+%     B.LineStyle = '-';
+%     clear C;
     
     % Plot Scale bar
     x = 10;

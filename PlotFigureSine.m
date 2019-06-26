@@ -1,20 +1,20 @@
 %% Path
-MainPath = '/home/ljp/Science/Projects/';
+MainPath = '/Users/Projects/';
 load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
 grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_198layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
-out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
-FigureOutPath = [MainPath, 'RLS/Data/AveragedPhaseMaps/Figure3Sine/'];
+out_path = ['/Users/migault/PhD/Presentations/2019/Toscany/'];
+FigureOutPath = ['/Users/migault/PhD/Presentations/2019/Toscany/PhaseMapPaper/'];
 mkdir(FigureOutPath);
 
 clear stack_path FigureName
-stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyes']; % stack of .tif images
-FigureName{1} = 'Phase Map Average With Eyes (n=6)';
+stack_path{1} = ['/Users/migault/PhD/Presentations/2019/Toscany/wrap_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_Value']; % stack of .tif images
+FigureName{1} = 'Response Map';
 
-stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithoutEyes']; % stack of .tif images
-FigureName{2} = 'Phase Map Average Without Eyes (n=9)';
+stack_path{2} = ['/Users/migault/PhD/Presentations/2019/Toscany/wrap_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_Left']; % stack of .tif images
+FigureName{2} = 'Phase Map Left';
  
-stack_path{3} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyesFree']; % stack of .tif images
-FigureName{3} = 'PhaseMapAverageWithEyesFree';
+stack_path{3} = ['/Users/migault/PhD/Presentations/2019/Toscany/wrap_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_Right']; % stack of .tif images
+FigureName{3} = 'Phase Map Right';
 
 %% Parameters
 BrainRegions = {'Diencephalon -' 'Rhombencephalon - Cerebellum' 'Mesencephalon - Tectum Stratum Periventriculare' ...

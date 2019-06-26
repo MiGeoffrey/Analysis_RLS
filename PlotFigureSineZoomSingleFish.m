@@ -1,9 +1,16 @@
 %% Path
-MainPath = '/home/ljp/Science/Projects/';
+% MainPath = '/home/ljp/Science/Projects/';
+% load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
+% grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_198layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
+% out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
+% FigureOutPath = [MainPath, 'RLS/Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/'];
+% mkdir(FigureOutPath);
+%% Path Mac
+MainPath = '/Users/Projects/';
 load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
 grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_198layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
-out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
-FigureOutPath = [MainPath, 'RLS/Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/'];
+out_path = ['/Users/migault/PhD/Presentations/2019/Toscany/'];
+FigureOutPath = ['/Users/migault/PhD/Presentations/2019/Toscany/PhaseMapPaper/'];
 mkdir(FigureOutPath);
 
 %% Crop images
@@ -110,8 +117,8 @@ CountourBrain = bwboundaries(img_br);
 disp('Finish Brain Countours')
 
 %% Phase Map Run 07
-PathPhaseMapRun07 = [MainPath, 'RLS/', 'Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/BinaryValueVest'];
-PathGreyStackRun07 = [MainPath, 'RLS/', 'Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/AFFINE_graystack_ON_zBrain_Elavl3-H2BRFP_198layers.nrrd']; 
+PathPhaseMapRun07 = ['/Users/Projects/RLS/Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/WARP_phasemap_ON_zBrain_Elavl3-H2BRFP_198layers_2/PhaseMap_Value'];
+%PathGreyStackRun07 = [MainPath, 'RLS/', 'Data/2019-05-17/Run 01/Analysis/Registration/zBrain_Elavl3-H2BRFP_198layers/AFFINE_graystack_ON_zBrain_Elavl3-H2BRFP_198layers.nrrd']; 
 %% Load the grey stack of the Run 7
 imgGreyStacktmp = flip(uint16(nrrdread(PathGreyStackRun07)),1);
 imgGreyStackR7 = uint16(zeros(height, width,3, Zs));
@@ -122,41 +129,42 @@ end
     imgstack = uint8(zeros(height, width,3, Zs));
     for layer = 1:Zs
         disp(layer)
-        img = imread([PathPhaseMapRun07, '/layer', num2str(layer, '%03d'), '.tif']);
+        img = imread([PathPhaseMapRun07, '/layer', num2str(layer, '%02d'), '.tif']);
+        img = cat(3, img, img, img);
         imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
     end
 %% Plot Layers of the Run7 with brain regions
 F2 = figure('Name', 'PhaseMapSingleFish');
 F2.Position = [0,0,2200+CT+CB,1500];
 It = 1;
-layerSelected = [30,41,45,53,57,64,70,74];
+layerSelected = [30,41,45,53,57,64,70,74];%[8,23,30,35,40,47,53,63,66,78]%[30,41,45,53,57,64,70,74];
 for layer = layerSelected
     disp(layer);
     subplot(2, size(layerSelected, 2)/2, It)
     
     % Plot Grey Stack
-    image(rescalegd2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-layer+1)-mean2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-69+1)*(1+layer/70))));
+    %image(rescalegd2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-layer+1)-mean2(imgGreyStackR7(CT:height-CB,CL:width-CR,:,Zs-69+1)*(1+layer/70))));
     %hold on;
     
     % Plot Phase map
     Im3 = image(imgstack(CT:height-CB,CL:width-CR,:,layer));
     %Im3.AlphaData = max(imgstack(:,:,:,layer), [], 3)*1.3;
-    title(['Layer ', num2str(layer), '(-', num2str((layer-3)*2) , 'μm)']);
+    title(['Layer ', num2str(layer), '(-', num2str((layer-3)*2) , 'um)']);
     axis off
     hold on;
-    pbaspect([(size(imgGreyStackR7(CT:height-CB,CL:width-CR,:,layer), 2)/size(imgGreyStackR7(CT:height-CB,CL:width-CR,:,layer), 1)) 1 1]);
+    pbaspect([(size(img(CT:height-CB,CL:width-CR,:), 2)/size(img(CT:height-CB,CL:width-CR,:), 1)) 1 1]);
     
-    % Plot Brain Regions
-    for br = 1:size(BrainRegions, 2)
-        for i = 1:size(CountourBrainRegionsStack{br,layer},1)/2
-            clear C
-            C = [CountourBrainRegionsStack{br,layer}{i,1}];
-            P = plot(C(:,2)-CL,C(:,1)-CT);
-            P.Color = [BrainRegionsColors{br}{1}];
-            P.LineWidth = BrainRegionsLineWidth{br};
-            P.LineStyle = BrainRegionsLineStyle{br};
-        end
-    end
+%     % Plot Brain Regions
+%     for br = 1:size(BrainRegions, 2)
+%         for i = 1:size(CountourBrainRegionsStack{br,layer},1)/2
+%             clear C
+%             C = [CountourBrainRegionsStack{br,layer}{i,1}];
+%             P = plot(C(:,2)-CL,C(:,1)-CT);
+%             P.Color = [BrainRegionsColors{br}{1}];
+%             P.LineWidth = BrainRegionsLineWidth{br};
+%             P.LineStyle = BrainRegionsLineStyle{br};
+%         end
+%     end
     
     % Plot Scale bar
     x = 540-(CL+CR);
@@ -172,13 +180,13 @@ for layer = layerSelected
     T.LineStyle = '-';
     
     % Plot Brain Countour
-    for i = 1:size(CountourBrainStack{layer},1)
-        C = [CountourBrainStack{layer}{i}];
-        P = plot(C(:,2)-CL,C(:,1)-CT);
-        P.Color = [0.5 0.5 0.5];
-        P.LineWidth = 1.5;
-        P.LineStyle = '-';
-    end
+%     for i = 1:size(CountourBrainStack{layer},1)
+%         C = [CountourBrainStack{layer}{i}];
+%         P = plot(C(:,2)-CL,C(:,1)-CT);
+%         P.Color = [0.5 0.5 0.5];
+%         P.LineWidth = 1.5;
+%         P.LineStyle = '-';
+%     end
     
     It = It + 1;
 end
