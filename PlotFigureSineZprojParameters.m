@@ -1,4 +1,4 @@
-% Figure_4F
+%% Figure_4F
 clear stack_path FigureName
 SaveNameFigure = 'PhaseMapAverageZproj';
 stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stackNuc51WithEyes']; % stack of .tif images
@@ -44,7 +44,7 @@ Subplot parameters
 SBLineNb = 1;
 SBColumnNb = 3*size(stack_path, 2);
 
-% Figure_4D
+%% Figure_4D
 clear stack_path FigureName
 SaveNameFigure = 'PhaseMapZprojRun7';
 
@@ -77,11 +77,11 @@ for i = 1:size(BrainRegions, 2)
     BrainRegionsColors{i} = {ColorMap(i,:)};
     BrainRegionsLineStyle{i} = '-';
 end
-Subplot parameters
+%Subplot parameters
 SBLineNb = 1;
 SBColumnNb = 3*size(stack_path, 2);
 
-% Figure_S2
+%% Figure_S2
 clear stack_path FigureName
 %%%%%%%%%% Plot in two figure beacause of a bug when we save the figure in svg %%%%%%%%%%%
 

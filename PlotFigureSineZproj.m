@@ -1,10 +1,9 @@
-
 %% Path
 MainPath = '/home/ljp/Science/Projects/';
 load([MainPath, 'RLS/Tools/zBrain/MaskDatabase.mat']); % Load the zbrain MaskDatabase.mat file which is in the tools file
 grey_stack_path = [MainPath, 'RLS/Data/RefBrains/zBrain_Elavl3-H2BRFP_178layers/zBrain_Elavl3-H2BRFP_198layers']; % The stack used for the registration
 out_path = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_brain_region'];
-FigureOutPath = ['/home/ljp/SSD/RLS/Data/2019-05-17/'];
+FigureOutPath = ['/home/ljp/Nextcloud/ForGeoffrey/NoteBook/2019/RollingTiltingRLS1P/Figures_SVG/'];
 mkdir(FigureOutPath);
 
 %% Path Mac
@@ -21,6 +20,40 @@ CR = 5; % Crop Right
 CT = 60; % Crop Top  Must be > 0
 CB = 270; % Crop Bottom 
 
+%% Figure
+clear stack_path FigureName
+SaveNameFigure = 'PhaseMapZprojRollingAverage';
+
+stack_path{1} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_Rolling/rgb']; % stack of .tif images
+FigureName{1} = 'Mean Phase Map: Rolling (n = 5)';
+ExpSaturation{1} = 2;
+
+stack_path{2} = [MainPath, 'RLS/Data/AveragedPhaseMaps/stack_Tilting/rgb']; % stack of .tif images
+FigureName{2} = 'Mean Phase Map: Tilting (n = 5)';
+ExpSaturation{2} = 2;
+
+BrainRegions = {'Mesencephalon - Torus Longitudinalis' ...
+                'Mesencephalon - NucMLF (nucleus of the medial longitudinal fascicle)' ...
+                'Mesencephalon - Oculomotor Nucleus nIII' ...
+                'Mesencephalon - Tegmentum' ...
+                'Diencephalon - Habenula' ...
+                'Rhombencephalon - Cerebellum' ...
+                'Rhombencephalon - Inferior Olive' ...
+                'Rhombencephalon - Oculomotor Nucleus nIV' ...
+                'Rhombencephalon - Spinal Backfill Vestibular Population' ...
+                'Rhombencephalon - Tangential Vestibular Nucleus' ...
+                };
+
+ColorMap = lines(size(BrainRegions, 2));
+BrainRegionsColors = cell(1,size(BrainRegions, 2));
+BrainRegionsLineStyle = cell(1,size(BrainRegions, 2));
+for i = 1:size(BrainRegions, 2)
+    BrainRegionsColors{i} = {ColorMap(i,:)};
+    BrainRegionsLineStyle{i} = '-';
+end
+% Subplot parameters
+SBLineNb = 1;
+SBColumnNb = 3*size(stack_path, 2);
 %% Countours of the brain regions
 %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
 CountourBrainRegions = cell(1,size(BrainRegions, 2));
@@ -58,13 +91,6 @@ BrainCountourRegions = {'Diencephalon -' 'Rhombencephalon -' 'Mesencephalon -' '
                 'Rhombencephalon - Oculomotor Nucleus nIV' ...
                 'Rhombencephalon - Spinal Backfill Vestibular Population' ...
                 'Rhombencephalon - Tangential Vestibular Nucleus' ...
-                'Rhombencephalon - Rhombomere 1' ...
-                'Rhombencephalon - Rhombomere 2' ...
-                'Rhombencephalon - Rhombomere 3' ...
-                'Rhombencephalon - Rhombomere 4' ...
-                'Rhombencephalon - Rhombomere 5' ...
-                'Rhombencephalon - Rhombomere 6' ...
-                'Rhombencephalon - Rhombomere 7' ...
                 'Ganglia - Statoacoustic Ganglion'};
 
 img_br = zeros(height, width);
@@ -113,7 +139,7 @@ for Exp = 1:size(stack_path, 2)
     %%%%%%%%%%% WARNING: format RAS %%%%%%%%%%%
     imgstack = uint8(zeros(height, width,3, Zs));
     imgGreyStack = uint8(zeros(height, width,3, Zs));
-    for layer = 20:Zs
+    for layer = 50:Zs
         clc;disp(['Exp ' num2str(Exp) ': layer = ' num2str(layer)])
 %         % Create an RGB image of the brain regions selected
 %         img_br = zeros(height, width);
@@ -132,8 +158,8 @@ for Exp = 1:size(stack_path, 2)
      
  %%%%%% Correction to plot the PhaseMap recorded in 2P-mode on RLS2P %%%%%%%%%%%%%%%%%%%%%%%%
                 %file = dir([stack_path{Exp}, '/layer', '*.tif']);
-                img = imread([stack_path{Exp}, '/Layer', num2str(layer, '%02d') '.tif']) ;
-                img = cat(3, sum(img, 3), sum(img, 3), sum(img, 3));
+                img = imread([stack_path{Exp}, '/layer', num2str(layer, '%02d') '.tif']) ;
+                %img = cat(3, sum(img, 3), sum(img, 3), sum(img, 3));
                % img = imtranslate(img, [-20 20]);%  [ rechts oben ]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         imgstack(:,:, :, Zs-layer+1) = flip(img, 1);
@@ -172,12 +198,12 @@ for Exp = 1:size(stack_path, 2)
     pbaspect([(size(imgZProj(CT:height-CB,CL:width-CR,:), 2)/size(imgZProj(CT:height-CB,CL:width-CR,:), 1)) 1 1]);
     
     % Plot Brain Countour
-%     C = [CountourBrain{1, 1}];
-%     B = plot(C(:,2)-CL,C(:,1)-CT)
-%     B.Color = [0.99 0.99 0.99];
-%     B.LineWidth = 2;
-%     B.LineStyle = '-';
-%     clear C;
+    C = [CountourBrain{1, 1}];
+    B = plot(C(:,2)-CL,C(:,1)-CT)
+    B.Color = [0.99 0.99 0.99];
+    B.LineWidth = 2;
+    B.LineStyle = '-';
+    clear C;
     
     % Plot Scale bar
     x = 540-(CL+CR);
@@ -219,12 +245,12 @@ for Exp = 1:size(stack_path, 2)
     pbaspect([(size(imgXProj(:,CT:height-CB,:), 1)*(1/0.8)/size(imgXProj(:,CT:height-CB,:), 2)) 1 1]);
     
     % Plot Brain Countour
-%     C = [CountourBrainX{1, 1}];
-%     B = plot(C(:,2)-CL,C(:,1)-CT)
-%     B.Color = [0.99 0.99 0.99];
-%     B.LineWidth = 2;
-%     B.LineStyle = '-';
-%     clear C;
+    C = [CountourBrainX{1, 1}];
+    B = plot(C(:,2)-CL,C(:,1)-CT)
+    B.Color = [0.99 0.99 0.99];
+    B.LineWidth = 2;
+    B.LineStyle = '-';
+    clear C;
     
     % Plot Scale bar
     x = 10;
@@ -265,4 +291,5 @@ end
 % Local
 saveas(F1, [FigureOutPath, '/', SaveNameFigure, '.fig']);
 saveas(F1, [FigureOutPath, '/',  SaveNameFigure, '.svg']);
+saveas(F1, [FigureOutPath, '/',  SaveNameFigure, '.png']);
 %%
